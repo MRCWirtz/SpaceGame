@@ -12,7 +12,8 @@ public class Physics {
 		for (int i = 0; i < set.objects.size(); i++) {
 
 			if (i == set.turn & set.objectState.get(i) == true)
-				updateTrack();
+				// update for this object i, the interaction matrice with other objects
+				updateInteractionMatrice();
 			else if (i == set.turn)
 				set.turn += 1;
 			
@@ -38,6 +39,7 @@ public class Physics {
 				float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
 				float mj = set.mObj.get(j);
 				
+				// check for a collision of two objects
 				if (disj < set.rObj.get(j) + set.rObj.get(i) && j > i) {
 					
 					velX = (m * velX + mj * set.objectVelocity.get(j).x) / (m + mj);
@@ -69,7 +71,7 @@ public class Physics {
 		}
 	}
 	
-	public static void updateTrack() {
+	public static void updateInteractionMatrice() {
 		
 		int i = set.turn;
 		float x = set.objects.get(i).x;

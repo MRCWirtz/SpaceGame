@@ -29,14 +29,16 @@ public class Setup implements ActionListener, KeyListener {
 	public float worldSize = 20000;
 	
 	public int predictor = 1000;
-	public float trackCut = (float) 0.05;
+	public float trackCut = (float) 0.05;	// only track high ratios of m/R^2
 	public int turn = 0;
 	public float radarSize = 300;
 
 	boolean[] keys = new boolean[222];
 
+	// gravitational constant
 	public float G = (float) ((float) 3 * Math.pow(10, -4));
-	
+
+	// set the universe
 	public int nStars = 5000;
 	public int nBH = 1;
 	public int nSun = 6;
@@ -52,22 +54,28 @@ public class Setup implements ActionListener, KeyListener {
 	public float rBH = 100;
 	public float mBH = (float) Math.pow(3 * rBH, 3);
 	
+	// set the background stars
 	public ArrayList<Point> stars = new ArrayList<Point>();
 	public ArrayList<Integer> starBrightness = new ArrayList<Integer>();
 	
+	// All object positions / velocities and accelerations for gravitational interacting objects
 	public ArrayList<Point2D.Float> objects = new ArrayList<Point2D.Float>();
 	public ArrayList<Point2D.Float> objectVelocity = new ArrayList<Point2D.Float>();
 	public ArrayList<Point2D.Float> objectAcceleration = new ArrayList<Point2D.Float>();
+	// trajObj will be a matrice for objects that interact which each other (based on high m/r^2 ratio)
 	public ArrayList<ArrayList<Integer>> trajObj = new ArrayList<ArrayList<Integer>>();
+	// stores if an object is still existing (true / false)
 	public ArrayList<Boolean> objectState = new ArrayList<Boolean>();
-	
+	// radius, mass and label of the object
 	public ArrayList<Float> rObj = new ArrayList<Float>();
 	public ArrayList<Float> mObj = new ArrayList<Float>();
 	public ArrayList<String> label = new ArrayList<String>();
-	
+
+	// coordinate, velocity and trajectory prediction of the space ship 
 	public Point2D.Float ship = new Point2D.Float();
 	public Point2D.Float shipVelocity = new Point2D.Float();
 	public ArrayList<Integer> trajShip = new ArrayList<Integer>();
+	// parameters
 	public float shipAcceleration = (float) 0.001;
 	public float shipAngle = 0;
 	public float rotSpeed = (float) 0.02;
