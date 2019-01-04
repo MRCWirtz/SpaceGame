@@ -5,123 +5,125 @@ import java.util.ArrayList;
 
 public class Ship {
 	
-	static Setup set = Setup.setup;
+	static Game game = Game.game;
 	
 	public static void move() {
 		
-		if (set.tick % 100 == 0)
+		if (game.tick % 100 == 0)
 			updateTrack();
 
-		float x = set.ship.x;
-		float y = set.ship.y;
-		float vx = set.shipVelocity.x;
-		float vy = set.shipVelocity.y;
-		float acc = set.shipAcceleration;
+		float x = game.ship.x;
+		float y = game.ship.y;
+		float vx = game.shipVelocity.x;
+		float vy = game.shipVelocity.y;
+		float acc = game.shipAcceleration;
 		
-		if (set.keys[KeyEvent.VK_SHIFT])
-			acc *= 10;
-		if (set.keys[KeyEvent.VK_A])
-			set.shipAngle -= set.rotSpeed;
-		if (set.keys[KeyEvent.VK_D])
-			set.shipAngle += set.rotSpeed;
-		if (set.keys[KeyEvent.VK_W]) {
-			vx += acc * Math.sin(set.shipAngle);
-			vy -= acc * Math.cos(set.shipAngle);
+		if (game.shipMode == true) {
+			if (game.keys[KeyEvent.VK_SHIFT])
+				acc *= 10;
+			if (game.keys[KeyEvent.VK_A])
+				game.shipAngle -= game.rotSpeed;
+			if (game.keys[KeyEvent.VK_D])
+				game.shipAngle += game.rotSpeed;
+			if (game.keys[KeyEvent.VK_W]) {
+				vx += acc * Math.sin(game.shipAngle);
+				vy -= acc * Math.cos(game.shipAngle);
+			}
 		}
 		
-		for (int j: set.trajShip) {
+		for (int j: game.trajShip) {
 			
-			if (set.objectState.get(j) == false)
+			if (game.objectState.get(j) == false)
 					continue;
 			
-			float xj = set.objects.get(j).x;
-			float yj = set.objects.get(j).y;
+			float xj = game.objects.get(j).x;
+			float yj = game.objects.get(j).y;
 	
 			float diffxj = xj - x;
 			float diffyj = yj - y;
 			float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-			float mj = set.mObj.get(j);
-			float rj = set.rObj.get(j);
+			float mj = game.mObj.get(j);
+			float rj = game.rObj.get(j);
 			
 			if (disj < rj) {
-				set.over = true;
+				game.over = true;
 			}
 			
-			vx += set.G * mj * diffxj / Math.pow(disj, 3);
-			vy += set.G * mj * diffyj / Math.pow(disj, 3);
+			vx += game.G * mj * diffxj / Math.pow(disj, 3);
+			vy += game.G * mj * diffyj / Math.pow(disj, 3);
 		}
 		
 		x += vx;
 		y += vy;
 		
-		set.ship.x = x;
-		set.ship.y = y;
-		set.shipVelocity.x = vx;
-		set.shipVelocity.y = vy;
+		game.ship.x = x;
+		game.ship.y = y;
+		game.shipVelocity.x = vx;
+		game.shipVelocity.y = vy;
 	}
 	
 	public static void updateTrack() {
 		
-		set.trajShip = new ArrayList<Integer>();
-		for (int i = 0; i < set.objects.size(); i++) {
+		game.trajShip = new ArrayList<Integer>();
+		for (int i = 0; i < game.objects.size(); i++) {
 			
-			if (set.objectState.get(i) == false)
+			if (game.objectState.get(i) == false)
 				continue;
 			
-			float xi = set.objects.get(i).x;
-			float yi = set.objects.get(i).y;
+			float xi = game.objects.get(i).x;
+			float yi = game.objects.get(i).y;
 			
-			float diffxShip = set.ship.x - xi;
-			float diffyShip = set.ship.y - yi;
+			float diffxShip = game.ship.x - xi;
+			float diffyShip = game.ship.y - yi;
 			float disShip = (float) Math.sqrt(diffxShip * diffxShip + diffyShip * diffyShip);
-			if (set.mObj.get(i) / Math.pow(disShip, 2) > 0.5 * set.trackCut || disShip <= 2 * set.rObj.get(i))
-				set.trajShip.add(i);
+			if (game.mObj.get(i) / Math.pow(disShip, 2) > 0.5 * game.trackCut || disShip <= 2 * game.rObj.get(i))
+				game.trajShip.add(i);
 		}
 	}
 	
 	public static void scale() {
 
-		float x = set.ship.x;
-		float y = set.ship.y;
+		float x = game.ship.x;
+		float y = game.ship.y;
 		
 		float rc = 200;
 		float rmax = 10;
-		set.scale = 1;
+		game.scale = 1;
 		
-		for (int j = 0; j < set.objects.size(); j++) {
+		for (int j = 0; j < game.objects.size(); j++) {
 			
-			float xj = set.objects.get(j).x;
-			float yj = set.objects.get(j).y;
+			float xj = game.objects.get(j).x;
+			float yj = game.objects.get(j).y;
 	
 			float diffxj = xj - x;
 			float diffyj = yj - y;
 			float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
 			
 			if (disj < rmax) {
-				set.scale = 2;
+				game.scale = 2;
 				break;
 			}
 			if (disj < rc) {
 				if (checkVel(j)) {
-					set.scale = 2 - 1 * (disj - rmax) / 200;
+					game.scale = 2 - 1 * (disj - rmax) / 200;
 					rc = disj;
 				}
 			}
 		}
-		//System.out.println(set.scale);
+		//System.out.println(game.scale);
 	}
 	
 	public static boolean checkVel(int j) {
 
-		float x = set.ship.x;
-		float y = set.ship.y;
-		float vx = set.shipVelocity.x;
-		float vy = set.shipVelocity.y;
+		float x = game.ship.x;
+		float y = game.ship.y;
+		float vx = game.shipVelocity.x;
+		float vy = game.shipVelocity.y;
 
-		float xj = set.objects.get(j).x;
-		float yj = set.objects.get(j).y;
-		float vxj = set.objectVelocity.get(j).x;
-		float vyj = set.objectVelocity.get(j).y;
+		float xj = game.objects.get(j).x;
+		float yj = game.objects.get(j).y;
+		float vxj = game.objectVelocity.get(j).x;
+		float vyj = game.objectVelocity.get(j).y;
 		
 		float diffxj = xj - x;
 		float diffyj = yj - y;
@@ -131,9 +133,9 @@ public class Ship {
 		float diffvyj = vyj - vy;
 		float disvj = (float) Math.sqrt(diffvxj * diffvxj + diffvyj * diffvyj);
 		
-		float m = set.mObj.get(j);
+		float m = game.mObj.get(j);
 		
-		if (disvj < 1.5 * Math.sqrt(2 * set.G * m / disj))
+		if (disvj < 1.5 * Math.sqrt(2 * game.G * m / disj))
 			return true;
 		else
 			return false;

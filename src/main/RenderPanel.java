@@ -24,108 +24,111 @@ public class RenderPanel extends JPanel {
 	public String imagePath = System.getProperty("user.dir") + "/img/";
 
 	protected void paintComponent(Graphics g) {
-		System.out.println(imagePath);
 
 		super.paintComponent(g);
-		Setup set = Setup.setup;
+		Game game = Game.game;
 		
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, set.dim.width, set.dim.height);
+		g.fillRect(0, 0, game.dim.width, game.dim.height);
 		
-		for (int i = 0; i < set.stars.size(); i++) {
-			g.setColor(new Color(255, 255, 255, set.starBrightness.get(i)));
-			g.fillOval(set.stars.get(i).x, set.stars.get(i).y, 2, 2);
+		for (int i = 0; i < game.stars.size(); i++) {
+			g.setColor(new Color(255, 255, 255, game.starBrightness.get(i)));
+			g.fillOval(game.stars.get(i).x, game.stars.get(i).y, 2, 2);
 		}
 		
 		g.setColor(Color.GRAY);
-		for (int i = 0; i < set.objects.size(); i++) {
-			if (set.objectState.get(i) == false)
+		for (int i = 0; i < game.objects.size(); i++) {
+			if (game.objectState.get(i) == false)
 				continue;
-			float r = set.rObj.get(i) * set.scale;
-			float xRel = (set.objects.get(i).x - set.ship.x) * set.scale;
-			float yRel = (set.objects.get(i).y - set.ship.y) * set.scale;
-			if (set.label.get(i) == "sun")
+			float r = game.rObj.get(i) * game.scale;
+			float xRel = (game.objects.get(i).x - game.xCenter) * game.scale;
+			float yRel = (game.objects.get(i).y - game.yCenter) * game.scale;
+			if (game.label.get(i) == "sun")
 				g.setColor(Color.YELLOW);
-			if (set.label.get(i) == "planet")
+			if (game.label.get(i) == "planet")
 				g.setColor(Color.GRAY);
-			if (set.label.get(i) == "bh")
+			if (game.label.get(i) == "bh")
 				g.setColor(Color.BLACK);
-			g.fillOval((int) (xRel + set.dim.width / 2 - r), (int) (yRel + set.dim.height / 2 - r), (int) (2*r), (int) (2*r));
+			g.fillOval((int) (xRel + game.dim.width / 2 - r), (int) (yRel + game.dim.height / 2 - r), (int) (2*r), (int) (2*r));
 		}
-		
-		float x = set.ship.x;
-		float y = set.ship.y;
-		float xold = set.ship.x;
-		float yold = set.ship.y;
-		float vx = set.shipVelocity.x;
-		float vy = set.shipVelocity.y;
 
-		ArrayList<Point2D.Float> objectCopy = new ArrayList<Point2D.Float>();
-		ArrayList<Point2D.Float> objectVelCopy = new ArrayList<Point2D.Float>();
-		for (int j = 0; j < set.objects.size(); j++) {
-			
-			float xj = set.objects.get(j).x;
-			float yj = set.objects.get(j).y;
-			float vxj = set.objectVelocity.get(j).x;
-			float vyj = set.objectVelocity.get(j).y;
-			objectCopy.add(j, new Point2D.Float(xj, yj));
-			objectVelCopy.add(j, new Point2D.Float(vxj, vyj));
-		}
-		
-		float length = 0; 
-		
-		for (int timeStep = 0; timeStep < set.predictor; timeStep++) {
-		
-			for (int j = 0; j < set.objects.size(); j++) {
-				
-				float xj = objectCopy.get(j).x;
-				float yj = objectCopy.get(j).y;
-				float vxj = objectVelCopy.get(j).x;
-				float vyj = objectVelCopy.get(j).y;
-				float axj = set.objectAcceleration.get(j).x;
-				float ayj = set.objectAcceleration.get(j).y;
-		
-				float diffxj = xj - x;
-				float diffyj = yj - y;
-				float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-				float mj = set.mObj.get(j);
-				float rj = set.rObj.get(j);
+		// draw the ships trajectory
+		if (game.shipMode == true) {
+			float x = game.ship.x;
+			float y = game.ship.y;
+			float xold = game.ship.x;
+			float yold = game.ship.y;
+			float vx = game.shipVelocity.x;
+			float vy = game.shipVelocity.y;
 	
-				vx += set.G * mj * diffxj / Math.pow(disj, 3);
-				vy += set.G * mj * diffyj / Math.pow(disj, 3);
+			ArrayList<Point2D.Float> objectCopy = new ArrayList<Point2D.Float>();
+			ArrayList<Point2D.Float> objectVelCopy = new ArrayList<Point2D.Float>();
+			for (int j = 0; j < game.objects.size(); j++) {
 				
-				if (disj < rj) {
-					String gameover = "Expecting collision!";
-					g.setColor(Color.RED);
-					g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-					g.drawString(gameover, set.dim.width / 2 - 100, set.dim.height - 100);
-				}
-				vxj += axj;
-				vyj += ayj;
-				objectVelCopy.set(j, new Point2D.Float(vxj, vyj));
-				objectCopy.set(j, new Point2D.Float(xj + vxj, yj + vyj));
-			}
-			x += vx;
-			y += vy;
-
-			if (length > 10) {
-				int trans = (int) ((int) - 400 * timeStep * (timeStep - set.predictor) / Math.pow(set.predictor, 2));
-				g.setColor(new Color(255, 255, 51, trans));
-				float xRel = (x - set.ship.x) * set.scale;
-				float yRel = (y - set.ship.y) * set.scale;
-				float xRelold = (x - set.ship.x) * set.scale;
-				float yRelold = (y - set.ship.y) * set.scale;
-				g.drawLine((int) (xRelold + set.dim.width / 2), (int) (yRelold + set.dim.height / 2), (int) (xRel + set.dim.width / 2), (int) (yRel + set.dim.height / 2));
+				float xj = game.objects.get(j).x;
+				float yj = game.objects.get(j).y;
+				float vxj = game.objectVelocity.get(j).x;
+				float vyj = game.objectVelocity.get(j).y;
+				objectCopy.add(j, new Point2D.Float(xj, yj));
+				objectVelCopy.add(j, new Point2D.Float(vxj, vyj));
 			}
 			
-			length += Math.sqrt((x - xold) * (x - xold) + (y - yold) * (y - yold));
-			xold = x;
-			yold = y;
+			float length = 0; 
+			
+			for (int timeStep = 0; timeStep < game.predictor; timeStep++) {
+			
+				for (int j = 0; j < game.objects.size(); j++) {
+					
+					float xj = objectCopy.get(j).x;
+					float yj = objectCopy.get(j).y;
+					float vxj = objectVelCopy.get(j).x;
+					float vyj = objectVelCopy.get(j).y;
+					float axj = game.objectAcceleration.get(j).x;
+					float ayj = game.objectAcceleration.get(j).y;
+			
+					float diffxj = xj - x;
+					float diffyj = yj - y;
+					float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
+					float mj = game.mObj.get(j);
+					float rj = game.rObj.get(j);
+		
+					vx += game.G * mj * diffxj / Math.pow(disj, 3);
+					vy += game.G * mj * diffyj / Math.pow(disj, 3);
+					
+					if (disj < rj) {
+						String gameover = "Expecting collision!";
+						g.setColor(Color.RED);
+						g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+						g.drawString(gameover, game.dim.width / 2 - 100, game.dim.height - 100);
+					}
+					vxj += axj;
+					vyj += ayj;
+					objectVelCopy.set(j, new Point2D.Float(vxj, vyj));
+					objectCopy.set(j, new Point2D.Float(xj + vxj, yj + vyj));
+				}
+				x += vx;
+				y += vy;
+	
+				if (length > 10) {
+					int trans = (int) ((int) - 400 * timeStep * (timeStep - game.predictor) / Math.pow(game.predictor, 2));
+					g.setColor(new Color(255, 255, 51, trans));
+					float xRel = (x - game.ship.x) * game.scale;
+					float yRel = (y - game.ship.y) * game.scale;
+					float xRelold = (x - game.ship.x) * game.scale;
+					float yRelold = (y - game.ship.y) * game.scale;
+					g.drawLine((int) (xRelold + game.dim.width / 2), (int) (yRelold + game.dim.height / 2), (int) (xRel + game.dim.width / 2), (int) (yRel + game.dim.height / 2));
+				}
+				
+				length += Math.sqrt((x - xold) * (x - xold) + (y - yold) * (y - yold));
+				xold = x;
+				yold = y;
+			}
 		}
-
+		
+		// draw the spacecraft
 		try {
 			shipRadar = ImageIO.read(new File(imagePath + "spacecraftRadar.gif"));
-			if (set.keys[KeyEvent.VK_W])
+			if (game.keys[KeyEvent.VK_W] & game.shipMode == true)
 				ship = ImageIO.read(new File(imagePath + "spacecraftAcc.gif"));
 			else
 				ship = ImageIO.read(new File(imagePath + "spacecraft.gif"));
@@ -133,38 +136,54 @@ public class RenderPanel extends JPanel {
 			e.printStackTrace();
 		}
 		
-		AffineTransform tx = AffineTransform.getRotateInstance(set.shipAngle, ship.getWidth() / 2, ship.getHeight() / 2);
-		AffineTransform txRadar = AffineTransform.getRotateInstance(set.shipAngle, shipRadar.getWidth() / 2, shipRadar.getHeight() / 2);
+		AffineTransform tx = AffineTransform.getRotateInstance(game.shipAngle, ship.getWidth() / 2, ship.getHeight() / 2);
+		AffineTransform txRadar = AffineTransform.getRotateInstance(game.shipAngle, shipRadar.getWidth() / 2, shipRadar.getHeight() / 2);
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 		AffineTransformOp opRadar = new AffineTransformOp(txRadar, AffineTransformOp.TYPE_BILINEAR);
 		
-		g.drawImage(op.filter(ship, null), set.dim.width / 2 - ship.getWidth() / 2, set.dim.height / 2 - ship.getHeight() / 2, this);
+		float xcoord = (game.ship.x - game.xCenter) * game.scale + game.dim.width / 2 - ship.getWidth() / 2;
+		float ycoord = (game.ship.y - game.yCenter) * game.scale + game.dim.height / 2 - ship.getHeight() / 2;
+		g.drawImage(op.filter(ship, null), (int) xcoord, (int) ycoord, this);
 		
+		// draw the radar
 		g.setColor(new Color(255, 255, 255, 30));
-		float xRadar = set.dim.width - set.radarSize - 20;
+		float xRadar = game.dim.width - game.radarSize - 20;
 		float yRadar = 20;
-		g.fillRect((int) xRadar, (int) yRadar, (int) set.radarSize, (int) set.radarSize);
+		g.fillRect((int) xRadar, (int) yRadar, (int) game.radarSize, (int) game.radarSize);
 		
-		g.drawImage(opRadar.filter(shipRadar, null), (int) (xRadar + ((float) set.ship.x / ((float) set.worldSize)) * set.radarSize - shipRadar.getWidth() / 2), 
-				(int) (yRadar + ((float) set.ship.y / ((float) set.worldSize)) * set.radarSize - shipRadar.getHeight() / 2), this);
+		g.drawImage(opRadar.filter(shipRadar, null), (int) (xRadar + ((float) game.ship.x / ((float) game.worldSize)) * game.radarSize - shipRadar.getWidth() / 2), 
+				(int) (yRadar + ((float) game.ship.y / ((float) game.worldSize)) * game.radarSize - shipRadar.getHeight() / 2), this);
 
-		for (int i = 0; i < set.objects.size(); i++){
-			if (set.label.get(i) == "planet" || set.objectState.get(i) == false)
+		for (int i = 0; i < game.objects.size(); i++){
+			if (game.label.get(i) == "planet" || game.objectState.get(i) == false)
 				continue;
-			if (set.label.get(i) == "bh")
+			if (game.label.get(i) == "bh")
 				g.setColor(Color.BLACK);
 			else
 				g.setColor(new Color(255, 255, 51, 100));
 				
-			g.fillOval((int) (xRadar + ((float) set.objects.get(i).x / ((float) set.worldSize)) * set.radarSize - 3), 
-					(int) (yRadar + ((float) set.objects.get(i).y / ((float) set.worldSize)) * set.radarSize - 3), 6, 6);
+			g.fillOval((int) (xRadar + ((float) game.objects.get(i).x / ((float) game.worldSize)) * game.radarSize - 3), 
+					(int) (yRadar + ((float) game.objects.get(i).y / ((float) game.worldSize)) * game.radarSize - 3), 6, 6);
 		}
 		
-		if (set.over == true) {
+		if (game.shipMode == true) {
+			String info = "Press [Esc] to switch view.";
+			g.setColor(Color.GRAY);
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 16));
+			g.drawString(info, 20, 20);
+		}
+		else {
+			String info = "Press [-] or [Page Down] to zoom out.";
+			g.setColor(Color.GRAY);
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 16));
+			g.drawString(info, 20, 20);
+		}
+		
+		if (game.over == true) {
 			String gameover = "GAME OVER!";
 			g.setColor(Color.RED);
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-			g.drawString(gameover, set.dim.width / 2 - 18 * gameover.length(), set.dim.height / 2 + 30);
+			g.drawString(gameover, game.dim.width / 2 - 18 * gameover.length(), game.dim.height / 2 + 30);
 		}
 			
 	}

@@ -5,97 +5,97 @@ import java.util.ArrayList;
 
 public class Physics {
 	
-	static Setup set = Setup.setup;
+	static Game game = Game.game;
 		
 	public static void move() {
 		
-		for (int i = 0; i < set.objects.size(); i++) {
+		for (int i = 0; i < game.objects.size(); i++) {
 
-			if (i == set.turn & set.objectState.get(i) == true)
+			if (i == game.turn & game.objectState.get(i) == true)
 				// update for this object i, the interaction matrice with other objects
 				updateInteractionMatrice();
-			else if (i == set.turn)
-				set.turn += 1;
+			else if (i == game.turn)
+				game.turn += 1;
 			
-			if (set.objectState.get(i) == false) 
+			if (game.objectState.get(i) == false) 
 				continue;
 			
-			float x = set.objects.get(i).x;
-			float y = set.objects.get(i).y;
-			float velX = set.objectVelocity.get(i).x;
-			float velY = set.objectVelocity.get(i).y;
-			float m = set.mObj.get(i);
-			float r = set.rObj.get(i);
+			float x = game.objects.get(i).x;
+			float y = game.objects.get(i).y;
+			float velX = game.objectVelocity.get(i).x;
+			float velY = game.objectVelocity.get(i).y;
+			float m = game.mObj.get(i);
+			float r = game.rObj.get(i);
 			
-			for (int j: set.trajObj.get(i)) {
-				if (j == i || set.objectState.get(j) == false)
+			for (int j: game.trajObj.get(i)) {
+				if (j == i || game.objectState.get(j) == false)
 					continue;
 
-				float xj = set.objects.get(j).x;
-				float yj = set.objects.get(j).y;
+				float xj = game.objects.get(j).x;
+				float yj = game.objects.get(j).y;
 
 				float diffxj = xj - x;
 				float diffyj = yj - y;
 				float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-				float mj = set.mObj.get(j);
+				float mj = game.mObj.get(j);
 				
 				// check for a collision of two objects
-				if (disj < set.rObj.get(j) + set.rObj.get(i) && j > i) {
+				if (disj < game.rObj.get(j) + game.rObj.get(i) && j > i) {
 					
-					velX = (m * velX + mj * set.objectVelocity.get(j).x) / (m + mj);
-					velY = (m * velY + mj * set.objectVelocity.get(j).y) / (m + mj);
+					velX = (m * velX + mj * game.objectVelocity.get(j).x) / (m + mj);
+					velY = (m * velY + mj * game.objectVelocity.get(j).y) / (m + mj);
 					
 					x = (m * x + mj * xj) / (m + mj);
 					y = (m * y + mj * yj) / (m + mj);
 					
 					m += mj;
-					float rj = set.rObj.get(j);
+					float rj = game.rObj.get(j);
 					r = (float) Math.pow(Math.pow(r, 3) + Math.pow(rj, 3), (float) 1/ 3);
-					if (r > set.rsunMin)
-						set.label.set(i, "sun");
+					if (r > game.rsunMin)
+						game.label.set(i, "sun");
 
-					set.mObj.set(i, m);
-					set.rObj.set(i, r);
-					set.objectState.set(j, false);
+					game.mObj.set(i, m);
+					game.rObj.set(i, r);
+					game.objectState.set(j, false);
 					
 					continue;
 				}
 				
-				velX += set.G * mj * diffxj / Math.pow(disj, 3);
-				velY += set.G * mj * diffyj / Math.pow(disj, 3);
+				velX += game.G * mj * diffxj / Math.pow(disj, 3);
+				velY += game.G * mj * diffyj / Math.pow(disj, 3);
 			}
 
-			set.objectAcceleration.set(i, new Point2D.Float(velX - set.objectVelocity.get(i).x, velY - set.objectVelocity.get(i).y));
-			set.objectVelocity.set(i, new Point2D.Float(velX, velY));
-			set.objects.set(i, new Point2D.Float(x + velX, y + velY));
+			game.objectAcceleration.set(i, new Point2D.Float(velX - game.objectVelocity.get(i).x, velY - game.objectVelocity.get(i).y));
+			game.objectVelocity.set(i, new Point2D.Float(velX, velY));
+			game.objects.set(i, new Point2D.Float(x + velX, y + velY));
 		}
 	}
 	
 	public static void updateInteractionMatrice() {
 		
-		int i = set.turn;
-		float x = set.objects.get(i).x;
-		float y = set.objects.get(i).y;
+		int i = game.turn;
+		float x = game.objects.get(i).x;
+		float y = game.objects.get(i).y;
 		ArrayList<Integer> indices = new ArrayList<Integer>();
 		
-		for (int j = 0; j < set.objects.size(); j++) {
+		for (int j = 0; j < game.objects.size(); j++) {
 			
 			if (j == i)
 				continue;
 			
-			float xi = set.objects.get(i).x;
-			float yi = set.objects.get(i).y;
+			float xi = game.objects.get(i).x;
+			float yi = game.objects.get(i).y;
 
 			float diffxj = x - xi;
 			float diffyj = y - yi;
 			float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-			if (set.mObj.get(j) / Math.pow(disj, 2) > set.trackCut || disj <= 2 * (set.rObj.get(i) + set.rObj.get(j)))
+			if (game.mObj.get(j) / Math.pow(disj, 2) > game.trackCut || disj <= 2 * (game.rObj.get(i) + game.rObj.get(j)))
 					indices.add(j);
 		}
-		set.trajObj.set(i, indices);
-		if (set.turn + 1 >= set.objects.size())
-			set.turn = 0;
+		game.trajObj.set(i, indices);
+		if (game.turn + 1 >= game.objects.size())
+			game.turn = 0;
 		else
-			set.turn += 1;
+			game.turn += 1;
 	}
 }

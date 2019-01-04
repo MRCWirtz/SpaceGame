@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,7 +16,7 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
-public class Setup implements ActionListener, KeyListener {
+public class Game implements ActionListener, KeyListener, MouseWheelListener {
 	
 
 	public JFrame jframe;
@@ -26,7 +28,7 @@ public class Setup implements ActionListener, KeyListener {
 	public boolean over = false;
 	public int tick = 0;	
 	public float scale = 1;
-	public float worldSize = 20000;
+	public float worldSize = 10000;
 	
 	public int predictor = 1000;
 	public float trackCut = (float) 0.05;	// only track high ratios of m/R^2
@@ -78,14 +80,15 @@ public class Setup implements ActionListener, KeyListener {
 	// parameters
 	public float shipAcceleration = (float) 0.001;
 	public float shipAngle = 0;
-	public float rotSpeed = (float) 0.02;
+	public float rotSpeed = (float) 0.03;
 	public boolean turbo = false;
-
-	public Random random;
-	public static Setup setup;
+	public boolean shipMode = true;
+	public float xCenter, yCenter;
 	
-	public Setup() {
-
+	public Random random;
+	public static Game game;
+	
+	public Game() {
 		jframe = new JFrame("Planet System");
 		jframe.setSize(dim.width, dim.height);
 		jframe.setExtendedState(JFrame.MAXIMIZED_BOTH); 
@@ -94,14 +97,15 @@ public class Setup implements ActionListener, KeyListener {
 		jframe.add(renderPanel = new RenderPanel());
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.addKeyListener(this);
-		startGame();
+		initGame();
+		timer.start();
 	}
-	
 
-	public void startGame() {
-		
+	public void initGame() {
+
 		random = new Random();
-
+		System.out.println(nStars);
+		// Place the background stars
 		for (int i = 0; i < nStars; i++) {
 			starBrightness.add(random.nextInt(200));
 			stars.add(new Point(random.nextInt(dim.width), random.nextInt(dim.height)));
@@ -235,16 +239,23 @@ public class Setup implements ActionListener, KeyListener {
 			if (mObj.get(i) / Math.pow(disShip, 2) > 0.5 * trackCut || disShip <= 2 * rObj.get(i))
 				trajShip.add(i);
 		}
-		
-		timer.start();
 	}
 	
 	public void actionPerformed(ActionEvent arg0) {
 
 		tick++;
+		
+		if (shipMode == true) {
+			xCenter = ship.x;
+			yCenter = ship.y;
+		}
+		
 		Physics.move();
 		Ship.move();
-		Ship.scale();
+		if (shipMode == true)
+			Ship.scale();
+		else
+			UserInteraction.setup();
 		renderPanel.repaint();
 		
 		if (over == true)
@@ -253,22 +264,35 @@ public class Setup implements ActionListener, KeyListener {
 	}
 	
 	public static void main(String[] args){
-		setup = new Setup();
+		game = new Game();
 	}
 	
 	@Override
-	public void keyPressed(KeyEvent e) {
-	    keys[e.getKeyCode()] = true;
+	public void keyPressed(KeyEvent ke) {
+		if (ke.getExtendedKeyCode() == KeyEvent.VK_ESCAPE)
+			shipMode = !shipMode;
+		if (ke.getExtendedKeyCode() == KeyEvent.VK_PLUS || ke.getExtendedKeyCode() == KeyEvent.VK_PAGE_UP) 
+			scale *= 1.25;
+		if (ke.getExtendedKeyCode() == KeyEvent.VK_MINUS || ke.getExtendedKeyCode() == KeyEvent.VK_PAGE_DOWN)
+			scale /= 1.25;
+	    keys[ke.getKeyCode()] = true;
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-	    keys[e.getKeyCode()] = false;
+	public void keyReleased(KeyEvent ke) {
+	    keys[ke.getKeyCode()] = false;
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void keyTyped(KeyEvent ke) {
+	}
+	
+	public void mouseWheelMoved(MouseWheelEvent ke) {
+	    if (ke.isControlDown()) {
+	        if (ke.getWheelRotation() < 0)
+	        	scale *= 1.25;
+	        else
+	        	scale /= 1.25;
+	    }
 	}
 }
