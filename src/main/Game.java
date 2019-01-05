@@ -12,6 +12,8 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Random;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -23,7 +25,9 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 	public RenderPanel renderPanel;
 	public Physics physics;
 	public Timer timer = new Timer(1, this);
-	public Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	//public Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	public Dimension dim = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
 	
 	public boolean over = false;
 	public int tick = 0;	
