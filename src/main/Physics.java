@@ -12,8 +12,8 @@ public class Physics {
 		for (int i = 0; i < game.objects.size(); i++) {
 
 			if (i == game.turn & game.objectState.get(i) == true)
-				// update for this object i, the interaction matrice with other objects
-				updateInteractionMatrice();
+				// update for this object i the interaction matrix with other objects
+				updateInteractionMatrix();
 			else if (i == game.turn)
 				game.turn += 1;
 			
@@ -71,7 +71,7 @@ public class Physics {
 		}
 	}
 	
-	public static void updateInteractionMatrice() {
+	public static void updateInteractionMatrix() {
 		
 		int i = game.turn;
 		float x = game.objects.get(i).x;

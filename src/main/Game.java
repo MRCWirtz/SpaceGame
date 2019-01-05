@@ -25,7 +25,7 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 	public RenderPanel renderPanel;
 	public Physics physics;
 	public Timer timer = new Timer(1, this);
-	//public Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	
 	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	public Dimension dim = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
 	
@@ -68,7 +68,7 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 	public ArrayList<Point2D.Float> objects = new ArrayList<Point2D.Float>();
 	public ArrayList<Point2D.Float> objectVelocity = new ArrayList<Point2D.Float>();
 	public ArrayList<Point2D.Float> objectAcceleration = new ArrayList<Point2D.Float>();
-	// trajObj will be a matrice for objects that interact which each other (based on high m/r^2 ratio)
+	// trajObj will be a matrix for objects that interact which each other (based on high m/r^2 ratio)
 	public ArrayList<ArrayList<Integer>> trajObj = new ArrayList<ArrayList<Integer>>();
 	// stores if an object is still existing (true / false)
 	public ArrayList<Boolean> objectState = new ArrayList<Boolean>();
