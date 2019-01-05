@@ -31,23 +31,23 @@ public class RenderPanel extends JPanel {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, game.dim.width, game.dim.height);
 		
-		for (int i = 0; i < game.stars.size(); i++) {
-			g.setColor(new Color(255, 255, 255, game.starBrightness.get(i)));
-			g.fillOval(game.stars.get(i).x, game.stars.get(i).y, 2, 2);
+		for (int i = 0; i < Universe.stars.size(); i++) {
+			g.setColor(new Color(255, 255, 255, Universe.starBrightness.get(i)));
+			g.fillOval(Universe.stars.get(i).x, Universe.stars.get(i).y, 2, 2);
 		}
 		
 		g.setColor(Color.GRAY);
-		for (int i = 0; i < game.objects.size(); i++) {
-			if (game.objectState.get(i) == false)
+		for (int i = 0; i < Universe.objects.size(); i++) {
+			if (Universe.objectState.get(i) == false)
 				continue;
-			float r = game.rObj.get(i) * game.scale;
-			float xRel = (game.objects.get(i).x - game.xCenter) * game.scale;
-			float yRel = (game.objects.get(i).y - game.yCenter) * game.scale;
-			if (game.label.get(i) == "sun")
+			float r = Universe.rObj.get(i) * game.scale;
+			float xRel = (Universe.objects.get(i).x - game.xCenter) * game.scale;
+			float yRel = (Universe.objects.get(i).y - game.yCenter) * game.scale;
+			if (Universe.label.get(i) == "sun")
 				g.setColor(Color.YELLOW);
-			if (game.label.get(i) == "planet")
+			if (Universe.label.get(i) == "planet")
 				g.setColor(Color.GRAY);
-			if (game.label.get(i) == "bh")
+			if (Universe.label.get(i) == "bh")
 				g.setColor(Color.BLACK);
 			g.fillOval((int) (xRel + game.dim.width / 2 - r), (int) (yRel + game.dim.height / 2 - r), (int) (2*r), (int) (2*r));
 		}
@@ -63,12 +63,12 @@ public class RenderPanel extends JPanel {
 	
 			ArrayList<Point2D.Float> objectCopy = new ArrayList<Point2D.Float>();
 			ArrayList<Point2D.Float> objectVelCopy = new ArrayList<Point2D.Float>();
-			for (int j = 0; j < game.objects.size(); j++) {
+			for (int j = 0; j < Universe.objects.size(); j++) {
 				
-				float xj = game.objects.get(j).x;
-				float yj = game.objects.get(j).y;
-				float vxj = game.objectVelocity.get(j).x;
-				float vyj = game.objectVelocity.get(j).y;
+				float xj = Universe.objects.get(j).x;
+				float yj = Universe.objects.get(j).y;
+				float vxj = Universe.objectVelocity.get(j).x;
+				float vyj = Universe.objectVelocity.get(j).y;
 				objectCopy.add(j, new Point2D.Float(xj, yj));
 				objectVelCopy.add(j, new Point2D.Float(vxj, vyj));
 			}
@@ -77,20 +77,20 @@ public class RenderPanel extends JPanel {
 			
 			for (int timeStep = 0; timeStep < game.predictor; timeStep++) {
 			
-				for (int j = 0; j < game.objects.size(); j++) {
+				for (int j = 0; j < Universe.objects.size(); j++) {
 					
 					float xj = objectCopy.get(j).x;
 					float yj = objectCopy.get(j).y;
 					float vxj = objectVelCopy.get(j).x;
 					float vyj = objectVelCopy.get(j).y;
-					float axj = game.objectAcceleration.get(j).x;
-					float ayj = game.objectAcceleration.get(j).y;
+					float axj = Universe.objectAcceleration.get(j).x;
+					float ayj = Universe.objectAcceleration.get(j).y;
 			
 					float diffxj = xj - x;
 					float diffyj = yj - y;
 					float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-					float mj = game.mObj.get(j);
-					float rj = game.rObj.get(j);
+					float mj = Universe.mObj.get(j);
+					float rj = Universe.rObj.get(j);
 		
 					vx += game.G * mj * diffxj / Math.pow(disj, 3);
 					vy += game.G * mj * diffyj / Math.pow(disj, 3);
@@ -151,19 +151,19 @@ public class RenderPanel extends JPanel {
 		float yRadar = 20;
 		g.fillRect((int) xRadar, (int) yRadar, (int) game.radarSize, (int) game.radarSize);
 		
-		g.drawImage(opRadar.filter(shipRadar, null), (int) (xRadar + ((float) game.ship.x / ((float) game.worldSize)) * game.radarSize - shipRadar.getWidth() / 2), 
-				(int) (yRadar + ((float) game.ship.y / ((float) game.worldSize)) * game.radarSize - shipRadar.getHeight() / 2), this);
+		g.drawImage(opRadar.filter(shipRadar, null), (int) (xRadar + ((float) game.ship.x / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getWidth() / 2), 
+				(int) (yRadar + ((float) game.ship.y / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getHeight() / 2), this);
 
-		for (int i = 0; i < game.objects.size(); i++){
-			if (game.label.get(i) == "planet" || game.objectState.get(i) == false)
+		for (int i = 0; i < Universe.objects.size(); i++){
+			if (Universe.label.get(i) == "planet" || Universe.objectState.get(i) == false)
 				continue;
-			if (game.label.get(i) == "bh")
+			if (Universe.label.get(i) == "bh")
 				g.setColor(Color.BLACK);
 			else
 				g.setColor(new Color(255, 255, 51, 100));
 				
-			g.fillOval((int) (xRadar + ((float) game.objects.get(i).x / ((float) game.worldSize)) * game.radarSize - 3), 
-					(int) (yRadar + ((float) game.objects.get(i).y / ((float) game.worldSize)) * game.radarSize - 3), 6, 6);
+			g.fillOval((int) (xRadar + ((float) Universe.objects.get(i).x / ((float) Universe.worldSize)) * game.radarSize - 3), 
+					(int) (yRadar + ((float) Universe.objects.get(i).y / ((float) Universe.worldSize)) * game.radarSize - 3), 6, 6);
 		}
 		
 		if (game.shipMode == true) {
