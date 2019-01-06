@@ -25,6 +25,8 @@ public class Ship {
 	public float accTurbo;
 	public float G = (float) ((float) 3 * Math.pow(10, -4));
 	private float fuelLevel;
+	private float fuelConsTurbo;
+	private float fuelConsDef;
 	
 	public Ship() {
 		x = Universe.worldSize * random.nextFloat(); 
@@ -36,6 +38,8 @@ public class Ship {
 		shipAngle = 0;
 		rotSpeed = (float) 0.03;
 		fuelLevel = (float) 0.7;
+		fuelConsTurbo = (float) 0.0001;
+		fuelConsDef = (float) 0.00001;
 		
 	}
 	public float getX() {return x;}
@@ -51,10 +55,14 @@ public class Ship {
 	public void move(Game game) {
 		
 		if (game.flightMode == true) {
-			if (game.keys[KeyEvent.VK_SHIFT])
+			if (game.keys[KeyEvent.VK_SHIFT]) {
 				acc = accTurbo;
-			else 
+				this.setFuelLevel(this.getFuelLevel() - this.fuelConsTurbo);
+			}
+			else {
 				acc = accDef;
+				this.setFuelLevel(this.getFuelLevel() - this.fuelConsDef);
+			}
 			if (game.keys[KeyEvent.VK_A])
 				shipAngle -= rotSpeed;
 			if (game.keys[KeyEvent.VK_D])
