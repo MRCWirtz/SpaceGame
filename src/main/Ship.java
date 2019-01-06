@@ -21,13 +21,14 @@ public class Ship {
 	private float vx;
 	private float vy;
 	private float acc;
-	public float accDef;
-	public float accTurbo;
-	public float G = (float) ((float) 3 * Math.pow(10, -4));
 	private float fuelLevel;
 	private float fuelConsTurbo;
 	private float fuelConsDef;
-	private boolean isTurbo;
+
+	public boolean isTurbo;
+	public float accDef;
+	public float accTurbo;
+	public float G = (float) ((float) 3 * Math.pow(10, -4));
 	
 	public Ship() {
 		x = Universe.worldSize * random.nextFloat(); 
@@ -76,44 +77,24 @@ public class Ship {
 				}
 				vx += acc * Math.sin(shipAngle);
 				vy -= acc * Math.cos(shipAngle);
-
-				
-				
 			}
 		}
 		
-		for (int cnt = 0; cnt < Universe.planetSystems.size(); cnt++) {
-			PlanetSystem currSystem = Universe.planetSystems.get(cnt);
-			float xi = currSystem.getX();
-			float yi = currSystem.getY();
+		for (int cnt = 0; cnt < Universe.planetSystems.getN(); cnt++) {
+			Object currObject = Universe.planetSystems.getObject(cnt);
+			float xi = currObject.getX();
+			float yi = currObject.getY();
 			float diffxi = xi - x;
 			float diffyi = yi - y;
 			float disi = (float) Math.sqrt(diffxi * diffxi + diffyi * diffyi);
-			float mi = currSystem.getMass();
-			float ri = currSystem.getR();
+			float mi = currObject.getMass();
+			float ri = currObject.getR();
 			
 			if (disi < ri)
 				game.over = true;
 			
 			vx += game.G * mi * diffxi / Math.pow(disi, 3);
 			vy += game.G * mi * diffyi / Math.pow(disi, 3);
-
-			for (int cntPlanet = 0; cntPlanet < currSystem.getN(); cntPlanet++) {
-				Planet currPlanet = currSystem.getPlanet(cntPlanet);
-				float xj = xi + currPlanet.getX();
-				float yj = yi + currPlanet.getY();
-				float diffxj = xj - x;
-				float diffyj = yj - y;
-				float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-				float mj = currPlanet.getMass();
-				float rj = currPlanet.getR();
-				
-				if (disj < rj)
-					game.over = true;
-				
-				vx += game.G * mj * diffxj / Math.pow(disj, 3);
-				vy += game.G * mj * diffyj / Math.pow(disj, 3);
-			}
 		}
 
 		x += vx;
@@ -123,11 +104,12 @@ public class Ship {
 
 	
 	public boolean checkVel(int j) {
-
-		float xj = Universe.objects.get(j).x;
-		float yj = Universe.objects.get(j).y;
-		float vxj = Universe.objectVelocity.get(j).x;
-		float vyj = Universe.objectVelocity.get(j).y;
+		
+		Object currObject = Universe.planetSystems.getObject(j);
+		float xj = currObject.getX();
+		float yj = currObject.getY();
+		float vxj = currObject.getVx();
+		float vyj = currObject.getVy();
 		
 		float diffxj = xj - x;
 		float diffyj = yj - y;
@@ -137,7 +119,7 @@ public class Ship {
 		float diffvyj = vyj - vy;
 		float disvj = (float) Math.sqrt(diffvxj * diffvxj + diffvyj * diffvyj);
 		
-		float m = Universe.mObj.get(j);
+		float m = currObject.getMass();
 		
 		if (disvj < 1.5 * Math.sqrt(2 * G * m / disj))
 			return true;
@@ -145,5 +127,4 @@ public class Ship {
 			return false;
 		
 	}
-
 }

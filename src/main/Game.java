@@ -68,7 +68,7 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 			yCenter = ship.getY();
 		}
 
-		Physics.move();
+		Universe.planetSystems.move();
 		ship.move(game);
 		if (flightMode == true)
 			scale();
@@ -87,10 +87,10 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 		float rmax = 10;
 		game.scale = 1;
 
-		for (int j = 0; j < Universe.objects.size(); j++) {
+		for (int j = 0; j < Universe.planetSystems.n; j++) {
 
-			float xj = Universe.objects.get(j).x;
-			float yj = Universe.objects.get(j).y;
+			float xj = Universe.planetSystems.getObject(j).getX();
+			float yj = Universe.planetSystems.getObject(j).getY();
 
 			float diffxj = xj - ship.getX();
 			float diffyj = yj - ship.getY();

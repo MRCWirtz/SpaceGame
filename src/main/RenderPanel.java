@@ -42,81 +42,48 @@ public class RenderPanel extends JPanel {
 		}
 
 		g.setColor(Color.GRAY);
-		for (int cnt = 0; cnt < Universe.planetSystems.size(); cnt++) {
-			PlanetSystem currSystem = Universe.planetSystems.get(cnt);
-			float xSystem = currSystem.getX();
-			float ySystem = currSystem.getY();
-			float r = currSystem.getR() * game.scale;
-			float xRel = (xSystem - game.xCenter) * game.scale;
-			float yRel = (ySystem - game.yCenter) * game.scale;
-			g.setColor(Color.YELLOW);
-			g.fillOval((int) (xRel + game.dim.width / 2 - r), (int) (yRel + game.dim.height / 2 - r), (int) (2*r), (int) (2*r));
-
-			for (int cntPlanet = 0; cntPlanet < currSystem.getN(); cntPlanet++) {
-				Planet currPlanet = currSystem.getPlanet(cntPlanet);
-				float xPlanet = xSystem + currPlanet.getX();
-				float yPlanet = ySystem + currPlanet.getY();
-				r = currPlanet.getR() * game.scale;
-				xRel = (xPlanet - game.xCenter) * game.scale;
-				yRel = (yPlanet - game.yCenter) * game.scale;
+		for (int cnt = 0; cnt < Universe.planetSystems.n; cnt++) {
+			Object currObject = Universe.planetSystems.getObject(cnt);
+			float xObj = currObject.getX();
+			float yObj = currObject.getY();
+			float r = currObject.getR() * game.scale;
+			float xRel = (xObj - game.xCenter) * game.scale;
+			float yRel = (yObj - game.yCenter) * game.scale;
+			if (currObject.isPlanet == true)
 				g.setColor(Color.GRAY);
-				g.fillOval((int) (xRel + game.dim.width / 2 - r), (int) (yRel + game.dim.height / 2 - r), (int) (2*r), (int) (2*r));
-			}
+			else
+				g.setColor(Color.YELLOW);
+			g.fillOval((int) (xRel + game.dim.width / 2 - r), (int) (yRel + game.dim.height / 2 - r), (int) (2*r), (int) (2*r));
 		}
 
 		// draw the ships trajectory
 		if (game.flightMode == true) {
 			float x = ship.getX();
 			float y = ship.getY();
-			float xold = x;
-			float yold = y;
+			float xold = ship.getX();
+			float yold = ship.getY();
 			float vx = ship.getVx();
 			float vy = ship.getVy();
 
-			ArrayList<Point2D.Float> objectCopy = new ArrayList<Point2D.Float>();
-			ArrayList<Point2D.Float> objectVelCopy = new ArrayList<Point2D.Float>();
-			for (int j = 0; j < Universe.objects.size(); j++) {
-
-				float xj = Universe.objects.get(j).x;
-				float yj = Universe.objects.get(j).y;
-				float vxj = Universe.objectVelocity.get(j).x;
-				float vyj = Universe.objectVelocity.get(j).y;
-				objectCopy.add(j, new Point2D.Float(xj, yj));
-				objectVelCopy.add(j, new Point2D.Float(vxj, vyj));
-			}
-
 			float length = 0;
-
 			for (int timeStep = 0; timeStep < game.predictor; timeStep++) {
 
-				for (int j = 0; j < Universe.objects.size(); j++) {
-
-					float xj = objectCopy.get(j).x;
-					float yj = objectCopy.get(j).y;
-					float vxj = objectVelCopy.get(j).x;
-					float vyj = objectVelCopy.get(j).y;
-					float axj = Universe.objectAcceleration.get(j).x;
-					float ayj = Universe.objectAcceleration.get(j).y;
-
-					float diffxj = xj - x;
-					float diffyj = yj - y;
+				for (int j = 0; j < Universe.planetSystems.n; j++) {
+					
+					Object currObject = Universe.planetSystems.getObject(j);
+					float diffxj = currObject.getXFuture(timeStep) - x;
+					float diffyj = currObject.getYFuture(timeStep) - y;
 					float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-					float mj = Universe.mObj.get(j);
-					float rj = Universe.rObj.get(j);
 
-					vx += game.G * mj * diffxj / Math.pow(disj, 3);
-					vy += game.G * mj * diffyj / Math.pow(disj, 3);
+					vx += game.G * currObject.getMass() * diffxj / Math.pow(disj, 3);
+					vy += game.G * currObject.getMass() * diffyj / Math.pow(disj, 3);
 
-					if (disj < rj) {
+					if (disj < currObject.getR()) {
 						String gameover = "Expecting collision!";
 						g.setColor(Color.RED);
 						g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
 						g.drawString(gameover, game.dim.width / 2 - 100, game.dim.height - 100);
 					}
-					vxj += axj;
-					vyj += ayj;
-					objectVelCopy.set(j, new Point2D.Float(vxj, vyj));
-					objectCopy.set(j, new Point2D.Float(xj + vxj, yj + vyj));
 				}
 				x += vx;
 				y += vy;
@@ -140,7 +107,7 @@ public class RenderPanel extends JPanel {
 		// draw the spacecraft
 		try {
 			shipRadar = ImageIO.read(new File(imagePath + "spacecraftRadar.gif"));
-			if (game.keys[KeyEvent.VK_W] & game.keys[KeyEvent.VK_SHIFT] & game.flightMode == true & ship.getFuelLevel() > 0)
+			if (game.keys[KeyEvent.VK_W] & game.flightMode == true & ship.isTurbo == true & ship.getFuelLevel() > 0)
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraftTurbo.gif"));
 			else if (game.keys[KeyEvent.VK_W] & game.flightMode == true & ship.getFuelLevel() > 0)
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraftAcc.gif"));
@@ -161,14 +128,14 @@ public class RenderPanel extends JPanel {
 		
 		// draw the fuel level
 		g.setColor(Color.GREEN);
-		g.fillRect(20, 1000, (int) (400 * ship.getFuelLevel()), 40);
+		g.fillRect(20, (int) (0.96 * game.dim.height), (int) (400 * ship.getFuelLevel()), (int) (0.02 * game.dim.height));
 		
 		Graphics2D g2 = (Graphics2D) g;
-		float thickness = 5;
+		float thickness = 4;
 		Stroke oldStroke = g2.getStroke();
 		g2.setColor(Color.ORANGE);
 		g2.setStroke(new BasicStroke(thickness));
-		g2.drawRect(20, 1000, 400 , 40);
+		g.drawRect(20, (int) (0.96 * game.dim.height), 400, (int) (0.02 * game.dim.height));
 		g2.setStroke(oldStroke);
 
 		// draw the radar
@@ -181,10 +148,10 @@ public class RenderPanel extends JPanel {
 				(int) (yRadar + ((float) ship.getY() / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getHeight() / 2), this);
 
 		g.setColor(new Color(255, 255, 51, 100));
-		for (int cnt = 0; cnt < Universe.planetSystems.size(); cnt++) {
-			PlanetSystem currSystem = Universe.planetSystems.get(cnt);
-			float xSystem = currSystem.getX();
-			float ySystem = currSystem.getY();
+		for (int cnt = 0; cnt < Universe.planetSystems.systemIdx.size(); cnt++) {
+			Object currObject = Universe.planetSystems.getObject(Universe.planetSystems.systemIdx.get(cnt));
+			float xSystem = currObject.getX();
+			float ySystem = currObject.getY();
 			g.fillOval((int) (xRadar + ((float) xSystem / ((float) Universe.worldSize)) * game.radarSize - 3),
 					(int) (yRadar + ((float) ySystem / ((float) Universe.worldSize)) * game.radarSize - 3), 6, 6);
 		}
