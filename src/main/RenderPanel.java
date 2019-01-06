@@ -37,19 +37,26 @@ public class RenderPanel extends JPanel {
 		}
 		
 		g.setColor(Color.GRAY);
-		for (int i = 0; i < Universe.objects.size(); i++) {
-			if (Universe.objectState.get(i) == false)
-				continue;
-			float r = Universe.rObj.get(i) * game.scale;
-			float xRel = (Universe.objects.get(i).x - game.xCenter) * game.scale;
-			float yRel = (Universe.objects.get(i).y - game.yCenter) * game.scale;
-			if (Universe.label.get(i) == "sun")
-				g.setColor(Color.YELLOW);
-			if (Universe.label.get(i) == "planet")
-				g.setColor(Color.GRAY);
-			if (Universe.label.get(i) == "bh")
-				g.setColor(Color.BLACK);
+		for (int cnt = 0; cnt < Universe.planetSystems.size(); cnt++) {
+			PlanetSystem currSystem = Universe.planetSystems.get(cnt);
+			float xSystem = currSystem.getX();
+			float ySystem = currSystem.getY();
+			float r = currSystem.getR() * game.scale;
+			float xRel = (xSystem - game.xCenter) * game.scale;
+			float yRel = (ySystem - game.yCenter) * game.scale;
+			g.setColor(Color.YELLOW);
 			g.fillOval((int) (xRel + game.dim.width / 2 - r), (int) (yRel + game.dim.height / 2 - r), (int) (2*r), (int) (2*r));
+			
+			for (int cntPlanet = 0; cntPlanet < currSystem.getN(); cntPlanet++) {
+				Planet currPlanet = currSystem.getPlanet(cntPlanet);
+				float xPlanet = xSystem + currPlanet.getX();
+				float yPlanet = ySystem + currPlanet.getY();
+				r = currPlanet.getR() * game.scale;
+				xRel = (xPlanet - game.xCenter) * game.scale;
+				yRel = (yPlanet - game.yCenter) * game.scale;
+				g.setColor(Color.GRAY);
+				g.fillOval((int) (xRel + game.dim.width / 2 - r), (int) (yRel + game.dim.height / 2 - r), (int) (2*r), (int) (2*r));
+			}
 		}
 
 		// draw the ships trajectory
@@ -153,17 +160,14 @@ public class RenderPanel extends JPanel {
 		
 		g.drawImage(opRadar.filter(shipRadar, null), (int) (xRadar + ((float) game.ship.x / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getWidth() / 2), 
 				(int) (yRadar + ((float) game.ship.y / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getHeight() / 2), this);
-
-		for (int i = 0; i < Universe.objects.size(); i++){
-			if (Universe.label.get(i) == "planet" || Universe.objectState.get(i) == false)
-				continue;
-			if (Universe.label.get(i) == "bh")
-				g.setColor(Color.BLACK);
-			else
-				g.setColor(new Color(255, 255, 51, 100));
-				
-			g.fillOval((int) (xRadar + ((float) Universe.objects.get(i).x / ((float) Universe.worldSize)) * game.radarSize - 3), 
-					(int) (yRadar + ((float) Universe.objects.get(i).y / ((float) Universe.worldSize)) * game.radarSize - 3), 6, 6);
+		
+		g.setColor(new Color(255, 255, 51, 100));
+		for (int cnt = 0; cnt < Universe.planetSystems.size(); cnt++) {
+			PlanetSystem currSystem = Universe.planetSystems.get(cnt);
+			float xSystem = currSystem.getX();
+			float ySystem = currSystem.getY();
+			g.fillOval((int) (xRadar + ((float) xSystem / ((float) Universe.worldSize)) * game.radarSize - 3), 
+					(int) (yRadar + ((float) ySystem / ((float) Universe.worldSize)) * game.radarSize - 3), 6, 6);
 		}
 		
 		if (game.shipMode == true) {

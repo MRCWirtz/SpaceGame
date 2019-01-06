@@ -33,9 +33,6 @@ public class Ship {
 		
 		for (int j: game.trajShip) {
 			
-			if (Universe.objectState.get(j) == false)
-					continue;
-			
 			float xj = Universe.objects.get(j).x;
 			float yj = Universe.objects.get(j).y;
 	
@@ -52,7 +49,7 @@ public class Ship {
 			vx += game.G * mj * diffxj / Math.pow(disj, 3);
 			vy += game.G * mj * diffyj / Math.pow(disj, 3);
 		}
-		
+
 		x += vx;
 		y += vy;
 		

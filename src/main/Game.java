@@ -23,7 +23,6 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 
 	public JFrame jframe;
 	public RenderPanel renderPanel;
-	public Physics physics;
 	public Universe universe;
 	public Timer timer = new Timer(1, this);
 	
@@ -84,8 +83,8 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 			xCenter = ship.x;
 			yCenter = ship.y;
 		}
-		
-		physics.move();
+
+		Physics.move();
 		Ship.move();
 		if (shipMode == true)
 			Ship.scale();
