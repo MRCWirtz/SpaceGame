@@ -24,6 +24,7 @@ public class Ship {
 	public float accDef;
 	public float accTurbo;
 	public float G = (float) ((float) 3 * Math.pow(10, -4));
+	private float fuelLevel;
 	
 	public Ship() {
 		x = Universe.worldSize * random.nextFloat(); 
@@ -34,6 +35,7 @@ public class Ship {
 		accTurbo = (float) 0.01;
 		shipAngle = 0;
 		rotSpeed = (float) 0.03;
+		fuelLevel = (float) 0.7;
 		
 	}
 	public float getX() {return x;}
@@ -43,6 +45,8 @@ public class Ship {
 	public double getVabs() {return  Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));}
 	public float getShipAngle() {return shipAngle;}
 	public float getAcc() {return acc;}
+	public void setFuelLevel( float newFuelLevel) { this.fuelLevel = newFuelLevel;}
+	public float getFuelLevel() { return fuelLevel;}
 	
 	public void move(Game game) {
 		System.out.println(getX());

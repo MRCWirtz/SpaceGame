@@ -3,6 +3,9 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.BasicStroke;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
 
 public class RenderPanel extends JPanel {
 
@@ -152,6 +156,18 @@ public class RenderPanel extends JPanel {
 		float xcoord = (ship.getX() - game.xCenter) * game.scale + game.dim.width / 2 - shipSprite.getWidth() / 2;
 		float ycoord = (ship.getY() - game.yCenter) * game.scale + game.dim.height / 2 - shipSprite.getHeight() / 2;
 		g.drawImage(op.filter(shipSprite, null), (int) xcoord, (int) ycoord, this);
+		
+		// draw the fuel level
+		g.setColor(Color.GREEN);
+		g.fillRect(20, 100, (int) (400 * ship.getFuelLevel()), 40);
+		
+		Graphics2D g2 = (Graphics2D) g;
+		float thickness = 5;
+		Stroke oldStroke = g2.getStroke();
+		g2.setColor(Color.ORANGE);
+		g2.setStroke(new BasicStroke(thickness));
+		g2.drawRect(20, 100, 400 , 40);
+		g2.setStroke(oldStroke);
 
 		// draw the radar
 		g.setColor(new Color(255, 255, 255, 30));
@@ -182,10 +198,6 @@ public class RenderPanel extends JPanel {
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 16));
 			g.drawString(speed, 1000, 20);
 
-			String acc = Double.toString(ship.getAcc());
-			g.setColor(Color.GREEN);
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 16));
-			g.drawString(acc, 1500, 20);
 		}
 		else {
 			String info = "Press [-] or [Page Down] to zoom out.";
