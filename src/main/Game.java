@@ -17,7 +17,6 @@ import javax.swing.Timer;
 
 public class Game implements ActionListener, KeyListener, MouseWheelListener {
 
-
 	public JFrame jframe;
 	public RenderPanel renderPanel;
 	public Timer timer = new Timer(1, this);
