@@ -2,36 +2,71 @@ package main;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Ship {
 	
-	static Game game = Game.game;
+	Game game = Game.game;
+	public ArrayList<Integer> trajShip = new ArrayList<Integer>();
+	// parameters
+	private float shipAngle;
+	private float rotSpeed;
+
+
 	
-	public static void move() {
+	static Random random =  new Random();
+	
+	private float x;
+	private float y;
+	private float vx;
+	private float vy;
+	private float acc;
+	public float accDef;
+	public float accTurbo;
+	public float G = (float) ((float) 3 * Math.pow(10, -4));
+	
+	public Ship() {
+		x = Universe.worldSize * random.nextFloat(); 
+		y = Universe.worldSize * random.nextFloat();
+		vx = 0;
+		vy = 0;
+		accDef = (float) 0.001;
+		accTurbo = (float) 0.01;
+		shipAngle = 0;
+		rotSpeed = (float) 0.03;
+		
+	}
+	public float getX() {return x;}
+	public float getY() {return y;}
+	public float getVx() {return vx;}
+	public float getVy() {return vy;}
+	public double getVabs() {return  Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));}
+	public float getShipAngle() {return shipAngle;}
+	public float getAcc() {return acc;}
+	
+	public void move(Game game) {
+		System.out.println(getX());
+		System.out.println(game.G);
 		
 		if (game.tick % 100 == 0)
 			updateTrack();
-
-		float x = game.ship.x;
-		float y = game.ship.y;
-		float vx = game.shipVelocity.x;
-		float vy = game.shipVelocity.y;
-		float acc = game.shipAcceleration;
 		
-		if (game.shipMode == true) {
+		if (game.flightMode == true) {
 			if (game.keys[KeyEvent.VK_SHIFT])
-				acc *= 10;
+				acc = accTurbo;
+			else 
+				acc = accDef;
 			if (game.keys[KeyEvent.VK_A])
-				game.shipAngle -= game.rotSpeed;
+				shipAngle -= rotSpeed;
 			if (game.keys[KeyEvent.VK_D])
-				game.shipAngle += game.rotSpeed;
+				shipAngle += rotSpeed;
 			if (game.keys[KeyEvent.VK_W]) {
-				vx += acc * Math.sin(game.shipAngle);
-				vy -= acc * Math.cos(game.shipAngle);
+				vx += acc * Math.sin(shipAngle);
+				vy -= acc * Math.cos(shipAngle);
 			}
 		}
 		
-		for (int j: game.trajShip) {
+		for (int j: trajShip) {
 			
 			float xj = Universe.objects.get(j).x;
 			float yj = Universe.objects.get(j).y;
@@ -53,15 +88,11 @@ public class Ship {
 		x += vx;
 		y += vy;
 		
-		game.ship.x = x;
-		game.ship.y = y;
-		game.shipVelocity.x = vx;
-		game.shipVelocity.y = vy;
 	}
 	
-	public static void updateTrack() {
+	public void updateTrack() {
 		
-		game.trajShip = new ArrayList<Integer>();
+		trajShip = new ArrayList<Integer>();
 		for (int i = 0; i < Universe.objects.size(); i++) {
 			
 			if (Universe.objectState.get(i) == false)
@@ -70,52 +101,17 @@ public class Ship {
 			float xi = Universe.objects.get(i).x;
 			float yi = Universe.objects.get(i).y;
 			
-			float diffxShip = game.ship.x - xi;
-			float diffyShip = game.ship.y - yi;
+			float diffxShip = x - xi;
+			float diffyShip = y - yi;
 			float disShip = (float) Math.sqrt(diffxShip * diffxShip + diffyShip * diffyShip);
 			if (Universe.mObj.get(i) / Math.pow(disShip, 2) > 0.5 * Universe.trackCut || disShip <= 2 * Universe.rObj.get(i))
-				game.trajShip.add(i);
+				trajShip.add(i);
 		}
 	}
 	
-	public static void scale() {
 
-		float x = game.ship.x;
-		float y = game.ship.y;
-		
-		float rc = 200;
-		float rmax = 10;
-		game.scale = 1;
-		
-		for (int j = 0; j < Universe.objects.size(); j++) {
-			
-			float xj = Universe.objects.get(j).x;
-			float yj = Universe.objects.get(j).y;
 	
-			float diffxj = xj - x;
-			float diffyj = yj - y;
-			float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-			
-			if (disj < rmax) {
-				game.scale = 2;
-				break;
-			}
-			if (disj < rc) {
-				if (checkVel(j)) {
-					game.scale = 2 - 1 * (disj - rmax) / 200;
-					rc = disj;
-				}
-			}
-		}
-		//System.out.println(game.scale);
-	}
-	
-	public static boolean checkVel(int j) {
-
-		float x = game.ship.x;
-		float y = game.ship.y;
-		float vx = game.shipVelocity.x;
-		float vy = game.shipVelocity.y;
+	public boolean checkVel(int j) {
 
 		float xj = Universe.objects.get(j).x;
 		float yj = Universe.objects.get(j).y;
@@ -132,7 +128,7 @@ public class Ship {
 		
 		float m = Universe.mObj.get(j);
 		
-		if (disvj < 1.5 * Math.sqrt(2 * game.G * m / disj))
+		if (disvj < 1.5 * Math.sqrt(2 * G * m / disj))
 			return true;
 		else
 			return false;

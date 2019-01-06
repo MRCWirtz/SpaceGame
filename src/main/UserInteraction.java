@@ -7,7 +7,7 @@ public class UserInteraction {
 	static Game game = Game.game;
 
 	public static void setup() {
-		if (game.shipMode == false) {
+		if (game.flightMode == false) {
 			if (game.keys[KeyEvent.VK_W])
 				game.yCenter -= 5 / game.scale;
 			if (game.keys[KeyEvent.VK_S])
