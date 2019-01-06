@@ -85,7 +85,6 @@ public class Universe {
 					if (mObj.get(j) / Math.pow(disj, 2) > trackCut || disj <= 2 * (rObj.get(i) + rObj.get(j)))
 						indices.add(j);
 				}
-				trajObj.add(indices);
 
 				float diffxShip = ship.getX() - xi;
 				float diffyShip = ship.getY() - yi;

@@ -159,8 +159,8 @@ public class RenderPanel extends JPanel {
 		float yRadar = 20;
 		g.fillRect((int) xRadar, (int) yRadar, (int) game.radarSize, (int) game.radarSize);
 
-		g.drawImage(opRadar.filter(shipRadar, null), (int) (xRadar + ((float) game.ship.x / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getWidth() / 2),
-				(int) (yRadar + ((float) game.ship.y / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getHeight() / 2), this);
+		g.drawImage(opRadar.filter(shipRadar, null), (int) (xRadar + ((float) ship.getX() / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getWidth() / 2),
+				(int) (yRadar + ((float) ship.getY() / ((float) Universe.worldSize)) * game.radarSize - shipRadar.getHeight() / 2), this);
 
 		g.setColor(new Color(255, 255, 51, 100));
 		for (int cnt = 0; cnt < Universe.planetSystems.size(); cnt++) {
