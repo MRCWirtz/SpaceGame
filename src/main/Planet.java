@@ -43,5 +43,7 @@ public class Planet {
 	public float getY() { return posY; }
 
 	public float getR() { return r; }
+	
+	public float getMass() { return mass; }
 
 }

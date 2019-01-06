@@ -52,9 +52,6 @@ public class Ship {
 		System.out.println(getX());
 		System.out.println(game.G);
 		
-		if (game.tick % 100 == 0)
-			updateTrack();
-		
 		if (game.flightMode == true) {
 			if (game.keys[KeyEvent.VK_SHIFT])
 				acc = accTurbo;
@@ -70,49 +67,44 @@ public class Ship {
 			}
 		}
 		
-		for (int j: trajShip) {
+		for (int cnt = 0; cnt < Universe.planetSystems.size(); cnt++) {
+			PlanetSystem currSystem = Universe.planetSystems.get(cnt);
+			float xi = currSystem.getX();
+			float yi = currSystem.getY();
+			float diffxi = xi - x;
+			float diffyi = yi - y;
+			float disi = (float) Math.sqrt(diffxi * diffxi + diffyi * diffyi);
+			float mi = currSystem.getMass();
+			float ri = currSystem.getR();
 			
-			float xj = Universe.objects.get(j).x;
-			float yj = Universe.objects.get(j).y;
-	
-			float diffxj = xj - x;
-			float diffyj = yj - y;
-			float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-			float mj = Universe.mObj.get(j);
-			float rj = Universe.rObj.get(j);
-			
-			if (disj < rj) {
+			if (disi < ri)
 				game.over = true;
-			}
 			
-			vx += game.G * mj * diffxj / Math.pow(disj, 3);
-			vy += game.G * mj * diffyj / Math.pow(disj, 3);
+			vx += game.G * mi * diffxi / Math.pow(disi, 3);
+			vy += game.G * mi * diffyi / Math.pow(disi, 3);
+
+			for (int cntPlanet = 0; cntPlanet < currSystem.getN(); cntPlanet++) {
+				Planet currPlanet = currSystem.getPlanet(cntPlanet);
+				float xj = xi + currPlanet.getX();
+				float yj = yi + currPlanet.getY();
+				float diffxj = xj - x;
+				float diffyj = xj - y;
+				float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
+				float mj = currPlanet.getMass();
+				float rj = currPlanet.getR();
+				
+				if (disj < rj)
+					game.over = true;
+				
+				vx += game.G * mj * diffxj / Math.pow(disj, 3);
+				vy += game.G * mj * diffyj / Math.pow(disj, 3);
+			}
 		}
 
 		x += vx;
 		y += vy;
 		
 	}
-	
-	public void updateTrack() {
-		
-		trajShip = new ArrayList<Integer>();
-		for (int i = 0; i < Universe.objects.size(); i++) {
-			
-			if (Universe.objectState.get(i) == false)
-				continue;
-			
-			float xi = Universe.objects.get(i).x;
-			float yi = Universe.objects.get(i).y;
-			
-			float diffxShip = x - xi;
-			float diffyShip = y - yi;
-			float disShip = (float) Math.sqrt(diffxShip * diffxShip + diffyShip * diffyShip);
-			if (Universe.mObj.get(i) / Math.pow(disShip, 2) > 0.5 * Universe.trackCut || disShip <= 2 * Universe.rObj.get(i))
-				trajShip.add(i);
-		}
-	}
-	
 
 	
 	public boolean checkVel(int j) {

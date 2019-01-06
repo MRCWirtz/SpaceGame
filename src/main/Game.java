@@ -39,11 +39,8 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 	boolean[] keys = new boolean[222];
 
 	// gravitational constant
-	public float G = (float) ((float) 3 * Math.pow(10, -4));
+	public float G = (float) ((float) 5 * Math.pow(10, -3));
 	public boolean flightMode = true;
-
-
-
 
 	Ship ship = new Ship();
 	public static Game game;
@@ -85,7 +82,7 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 
 	}
 
-	public  void scale() {
+	public void scale() {
 
 		float rc = 200;
 		float rmax = 10;

@@ -60,37 +60,5 @@ public class Universe {
 				planetSystem.addPlanet(300 + (float) Math.pow(i, 2) * 50, r, 1000, 5);
 			}
 			planetSystems.add(planetSystem);
-
-			// Initializing the ship start parameters
-				Ship ship = new Ship();
-
-			// Initializing the interaction matrices
-			for (int i = 0; i < objects.size(); i++) {
-
-				ArrayList<Integer> indices = new ArrayList<Integer>();
-				float xi = objects.get(i).x;
-				float yi = objects.get(i).y;
-
-				for (int j = 0; j < objects.size(); j++) {
-
-					if (j == i)
-						continue;
-
-					float xj = objects.get(j).x;
-					float yj = objects.get(j).y;
-
-					float diffxj = xj - xi;
-					float diffyj = yj - yi;
-					float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-					if (mObj.get(j) / Math.pow(disj, 2) > trackCut || disj <= 2 * (rObj.get(i) + rObj.get(j)))
-						indices.add(j);
-				}
-
-				float diffxShip = ship.getX() - xi;
-				float diffyShip = ship.getY() - yi;
-				float disShip = (float) Math.sqrt(diffxShip * diffxShip + diffyShip * diffyShip);
-				if (mObj.get(i) / Math.pow(disShip, 2) > 0.5 * trackCut || disShip <= 2 * rObj.get(i))
-					ship.trajShip.add(i);
-			}
-		}
+	}
 }
