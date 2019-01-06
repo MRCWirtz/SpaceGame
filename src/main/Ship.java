@@ -49,8 +49,6 @@ public class Ship {
 	public float getFuelLevel() { return fuelLevel;}
 	
 	public void move(Game game) {
-		System.out.println(getX());
-		System.out.println(game.G);
 		
 		if (game.flightMode == true) {
 			if (game.keys[KeyEvent.VK_SHIFT])
@@ -88,7 +86,7 @@ public class Ship {
 				float xj = xi + currPlanet.getX();
 				float yj = yi + currPlanet.getY();
 				float diffxj = xj - x;
-				float diffyj = xj - y;
+				float diffyj = yj - y;
 				float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
 				float mj = currPlanet.getMass();
 				float rj = currPlanet.getR();
