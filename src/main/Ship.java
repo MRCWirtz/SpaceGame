@@ -38,8 +38,8 @@ public class Ship {
 		shipAngle = 0;
 		rotSpeed = (float) 0.03;
 		fuelLevel = (float) 0.7;
-		fuelConsTurbo = (float) 0.0001;
-		fuelConsDef = (float) 0.00001;
+		fuelConsTurbo = (float) 0.01;
+		fuelConsDef = (float) 0.001;
 		
 	}
 	public float getX() {return x;}
@@ -49,7 +49,7 @@ public class Ship {
 	public double getVabs() {return  Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));}
 	public float getShipAngle() {return shipAngle;}
 	public float getAcc() {return acc;}
-	public void setFuelLevel( float newFuelLevel) { this.fuelLevel = newFuelLevel;}
+	public void setFuelLevel( float newFuelLevel) { Math.max(0, this.fuelLevel = newFuelLevel);}
 	public float getFuelLevel() { return fuelLevel;}
 	
 	public void move(Game game) {
@@ -67,7 +67,7 @@ public class Ship {
 				shipAngle -= rotSpeed;
 			if (game.keys[KeyEvent.VK_D])
 				shipAngle += rotSpeed;
-			if (game.keys[KeyEvent.VK_W]) {
+			if (game.keys[KeyEvent.VK_W] & this.fuelLevel > 0.0) {
 				vx += acc * Math.sin(shipAngle);
 				vy -= acc * Math.cos(shipAngle);
 			}
