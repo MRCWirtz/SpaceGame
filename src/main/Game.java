@@ -20,7 +20,6 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 
 	public JFrame jframe;
 	public RenderPanel renderPanel;
-	public Universe universe;
 	public Timer timer = new Timer(1, this);
 
 	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
