@@ -106,7 +106,6 @@ public class Ship {
 
 		float rc = 200;
 		float rmax = 10;
-		Game.scale = 1;
 
 		for (int j = 0; j < Universe.planetSystems.n; j++) {
 

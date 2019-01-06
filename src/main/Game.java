@@ -60,16 +60,15 @@ public class Game implements ActionListener, KeyListener, MouseWheelListener {
 		tick++;
 
 		if (flightMode == true) {
+			ship.scale();
 			xCenter = ship.getX();
 			yCenter = ship.getY();
 		}
+		else
+			UserInteraction.interactiveMode();
 
 		Universe.planetSystems.move();
 		ship.move();
-		if (flightMode == true)
-			ship.scale();
-		else
-			UserInteraction.interactiveMode();
 		renderPanel.repaint();
 
 		if (over == true)
