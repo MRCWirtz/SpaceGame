@@ -38,9 +38,9 @@ public class Ship {
 		accTurbo = (float) 0.01;
 		shipAngle = 0;
 		rotSpeed = (float) 0.03;
-		fuelLevel = (float) 0.7;
-		fuelConsTurbo = (float) 0.01;
-		fuelConsDef = (float) 0.001;
+		fuelLevel = (float) 1.;
+		fuelConsTurbo = (float) 1e-4;
+		fuelConsDef = (float) 1e-5;
 		isTurbo = false;
 		
 	}

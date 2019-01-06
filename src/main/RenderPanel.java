@@ -140,7 +140,9 @@ public class RenderPanel extends JPanel {
 		// draw the spacecraft
 		try {
 			shipRadar = ImageIO.read(new File(imagePath + "spacecraftRadar.gif"));
-			if (game.keys[KeyEvent.VK_W] & game.flightMode == true & ship.getFuelLevel() > 0)
+			if (game.keys[KeyEvent.VK_W] & game.keys[KeyEvent.VK_SHIFT] & game.flightMode == true & ship.getFuelLevel() > 0)
+				shipSprite = ImageIO.read(new File(imagePath + "spacecraftTurbo.gif"));
+			else if (game.keys[KeyEvent.VK_W] & game.flightMode == true & ship.getFuelLevel() > 0)
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraftAcc.gif"));
 			else
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraft.gif"));
