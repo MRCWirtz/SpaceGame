@@ -6,8 +6,7 @@ public class PlanetSystems {
 
 	public int n = 0;
 	public ArrayList<Integer> systemIdx = new ArrayList<Integer>();
-
-	private ArrayList<Object> objects = new ArrayList();
+	private ArrayList<Object> objects = new ArrayList<Object>();
 	
 	public PlanetSystems() {
 		return;

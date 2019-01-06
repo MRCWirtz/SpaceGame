@@ -83,5 +83,10 @@ public class Object {
 	public float getR() { return r; }
 	
 	public float getMass() { return mass; }
-
+	
+	public float[] getGravity(float xi, float yi) {
+		float dis = Calculation.getDistance(getX(), getY(), xi, yi);
+		float gravity = Physics.G * getMass() / (float) Math.pow(dis, 3);
+		return new float[] {gravity * (getX() - xi), gravity * (getY() - yi), dis};
+	}
 }

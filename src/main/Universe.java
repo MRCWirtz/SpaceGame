@@ -33,12 +33,12 @@ public class Universe {
 
 	static Random random =  new Random();
 
-	public static void initGame(Game game) {
+	public static void initGame() {
 			// Place the background stars
 			Random random = new Random();
 			for (int i = 0; i < nStars; i++) {
 				starBrightness.add(random.nextInt(200));
-				stars.add(new Point(random.nextInt(game.dim.width), random.nextInt(game.dim.height)));
+				stars.add(new Point(random.nextInt(Game.dim.width), random.nextInt(Game.dim.height)));
 
 			}
 			for (int j = 0; j < nSystems; j++) {

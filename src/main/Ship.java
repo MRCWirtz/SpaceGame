@@ -16,6 +16,8 @@ public class Ship {
 	
 	static Random random =  new Random();
 	
+	private float size;
+	
 	private float x;
 	private float y;
 	private float vx;
@@ -31,17 +33,18 @@ public class Ship {
 	public float G = (float) ((float) 3 * Math.pow(10, -4));
 	
 	public Ship() {
+		size = 40;	// pixel edge size
 		x = Universe.worldSize * random.nextFloat(); 
 		y = Universe.worldSize * random.nextFloat();
 		vx = 0;
 		vy = 0;
-		accDef = (float) 0.001;
+		accDef = (float) 0.003;
 		accTurbo = (float) 0.01;
 		shipAngle = 0;
-		rotSpeed = (float) 0.03;
+		rotSpeed = (float) 0.05;
 		fuelLevel = (float) 1.;
-		fuelConsTurbo = (float) 1e-4;
-		fuelConsDef = (float) 1e-5;
+		fuelConsTurbo = (float) 3e-4;
+		fuelConsDef = (float) 1e-4;
 		isTurbo = false;
 		
 	}
@@ -54,10 +57,11 @@ public class Ship {
 	public float getAcc() {return acc;}
 	public void setFuelLevel( float newFuelLevel) { Math.max(0, this.fuelLevel = newFuelLevel);}
 	public float getFuelLevel() { return fuelLevel;}
+	public float getSize() {return size;}
 	
 	public void move() {
 		
-		if (Game.flightMode == true) {
+		if (Game.followMode == true) {
 			if (UserInteraction.keys[KeyEvent.VK_SHIFT])
 				isTurbo = true;	
 			else
@@ -82,19 +86,12 @@ public class Ship {
 		
 		for (int cnt = 0; cnt < Universe.planetSystems.getN(); cnt++) {
 			Object currObject = Universe.planetSystems.getObject(cnt);
-			float xi = currObject.getX();
-			float yi = currObject.getY();
-			float diffxi = xi - x;
-			float diffyi = yi - y;
-			float disi = (float) Math.sqrt(diffxi * diffxi + diffyi * diffyi);
-			float mi = currObject.getMass();
-			float ri = currObject.getR();
-			
-			if (disi < ri)
+			float[] velocityUpdate = currObject.getGravity(x, y);
+
+			if ( velocityUpdate[2] < currObject.getR() )
 				Game.over = true;
-			
-			vx += Physics.G * mi * diffxi / Math.pow(disi, 3);
-			vy += Physics.G * mi * diffyi / Math.pow(disi, 3);
+			vx += velocityUpdate[0];
+			vy += velocityUpdate[1];
 		}
 
 		x += vx;
