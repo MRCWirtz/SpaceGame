@@ -140,7 +140,7 @@ public class RenderPanel extends JPanel {
 		// draw the spacecraft
 		try {
 			shipRadar = ImageIO.read(new File(imagePath + "spacecraftRadar.gif"));
-			if (game.keys[KeyEvent.VK_W] & game.flightMode == true)
+			if (game.keys[KeyEvent.VK_W] & game.flightMode == true & ship.getFuelLevel() > 0)
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraftAcc.gif"));
 			else
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraft.gif"));
@@ -159,14 +159,14 @@ public class RenderPanel extends JPanel {
 		
 		// draw the fuel level
 		g.setColor(Color.GREEN);
-		g.fillRect(20, 100, (int) (400 * ship.getFuelLevel()), 40);
+		g.fillRect(20, 1000, (int) (400 * ship.getFuelLevel()), 40);
 		
 		Graphics2D g2 = (Graphics2D) g;
 		float thickness = 5;
 		Stroke oldStroke = g2.getStroke();
 		g2.setColor(Color.ORANGE);
 		g2.setStroke(new BasicStroke(thickness));
-		g2.drawRect(20, 100, 400 , 40);
+		g2.drawRect(20, 1000, 400 , 40);
 		g2.setStroke(oldStroke);
 
 		// draw the radar
