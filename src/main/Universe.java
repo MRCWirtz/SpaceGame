@@ -13,7 +13,7 @@ public class Universe {
 	static float worldSize = 10000;
 	// set the universe
 	static int nStars = 5000;
-	static int nSystems = 1;
+	static int nSystems = 2;
 	static int nPlanets = 6;
 
 	static float rPlanetMin = 10;
@@ -43,7 +43,7 @@ public class Universe {
 			}
 			for (int j = 0; j < nSystems; j++) {
 				float rSun = rsunMin + (rsunMax - rsunMin) * random.nextFloat();
-				planetSystems.addStar(worldSize / 2, worldSize / 2, rSun);
+				planetSystems.addStar((float) (j + 1) * worldSize / 3, (float) (j + 1) * worldSize / 3, rSun);
 				for (int i = 0; i < nPlanets; i++) {
 					float r = (rPlanetMax - rPlanetMin) * random.nextFloat() + rPlanetMin;
 					planetSystems.addPlanet(j, 300 + (float) Math.pow(i, 2) * 100, r, 1000, 5);
