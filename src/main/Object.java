@@ -36,7 +36,7 @@ public class Object {
 	public void setOrbit(float R, float mSun) {
 		this.isPlanet = true;
 		this.phi = 2 * (float) Math.PI * random.nextFloat();
-		this.omega = (float) Math.sqrt(mSun * 3 * (float) Math.pow(10, -4) / (float) Math.pow(R, 3));
+		this.omega = (float) Math.sqrt(mSun * Physics.G / (float) Math.pow(R, 3));
 		this.R = R;
 	}
 	

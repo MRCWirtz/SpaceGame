@@ -55,18 +55,18 @@ public class Ship {
 	public void setFuelLevel( float newFuelLevel) { Math.max(0, this.fuelLevel = newFuelLevel);}
 	public float getFuelLevel() { return fuelLevel;}
 	
-	public void move(Game game) {
+	public void move() {
 		
-		if (game.flightMode == true) {
-			if (game.keys[KeyEvent.VK_SHIFT])
+		if (Game.flightMode == true) {
+			if (UserInteraction.keys[KeyEvent.VK_SHIFT])
 				isTurbo = true;	
 			else
 				isTurbo = false;
-			if (game.keys[KeyEvent.VK_A])
+			if (UserInteraction.keys[KeyEvent.VK_A])
 				shipAngle -= rotSpeed;
-			if (game.keys[KeyEvent.VK_D])
+			if (UserInteraction.keys[KeyEvent.VK_D])
 				shipAngle += rotSpeed;
-			if (game.keys[KeyEvent.VK_W] & this.fuelLevel > 0.0) {
+			if (UserInteraction.keys[KeyEvent.VK_W] & this.fuelLevel > 0.0) {
 				if (isTurbo) {
 					this.setFuelLevel(this.getFuelLevel() - this.fuelConsTurbo);
 					acc = accTurbo;
@@ -91,10 +91,10 @@ public class Ship {
 			float ri = currObject.getR();
 			
 			if (disi < ri)
-				game.over = true;
+				Game.over = true;
 			
-			vx += game.G * mi * diffxi / Math.pow(disi, 3);
-			vy += game.G * mi * diffyi / Math.pow(disi, 3);
+			vx += Physics.G * mi * diffxi / Math.pow(disi, 3);
+			vy += Physics.G * mi * diffyi / Math.pow(disi, 3);
 		}
 
 		x += vx;
@@ -102,7 +102,35 @@ public class Ship {
 		
 	}
 
-	
+	public void scale() {
+
+		float rc = 200;
+		float rmax = 10;
+		Game.scale = 1;
+
+		for (int j = 0; j < Universe.planetSystems.n; j++) {
+
+			float xj = Universe.planetSystems.getObject(j).getX();
+			float yj = Universe.planetSystems.getObject(j).getY();
+
+			float diffxj = xj - getX();
+			float diffyj = yj - getY();
+			float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
+
+			if (disj < rmax) {
+				Game.scale = 2;
+				break;
+			}
+			if (disj < rc) {
+				if (checkVel(j)) {
+					Game.scale = 2 - 1 * (disj - rmax) / 200;
+					rc = disj;
+				}
+			}
+		}
+		//System.out.println(game.scale);
+	}
+
 	public boolean checkVel(int j) {
 		
 		Object currObject = Universe.planetSystems.getObject(j);
@@ -121,7 +149,7 @@ public class Ship {
 		
 		float m = currObject.getMass();
 		
-		if (disvj < 1.5 * Math.sqrt(2 * G * m / disj))
+		if (disvj < 1.5 * Math.sqrt(2 * Physics.G * m / disj))
 			return true;
 		else
 			return false;

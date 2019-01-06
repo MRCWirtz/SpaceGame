@@ -75,8 +75,8 @@ public class RenderPanel extends JPanel {
 					float diffyj = currObject.getYFuture(timeStep) - y;
 					float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
 
-					vx += game.G * currObject.getMass() * diffxj / Math.pow(disj, 3);
-					vy += game.G * currObject.getMass() * diffyj / Math.pow(disj, 3);
+					vx += Physics.G * currObject.getMass() * diffxj / Math.pow(disj, 3);
+					vy += Physics.G * currObject.getMass() * diffyj / Math.pow(disj, 3);
 
 					if (disj < currObject.getR()) {
 						String gameover = "Expecting collision!";
@@ -107,9 +107,9 @@ public class RenderPanel extends JPanel {
 		// draw the spacecraft
 		try {
 			shipRadar = ImageIO.read(new File(imagePath + "spacecraftRadar.gif"));
-			if (game.keys[KeyEvent.VK_W] & game.flightMode == true & ship.isTurbo == true & ship.getFuelLevel() > 0)
+			if (UserInteraction.keys[KeyEvent.VK_W] & game.flightMode == true & ship.isTurbo == true & ship.getFuelLevel() > 0)
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraftTurbo.gif"));
-			else if (game.keys[KeyEvent.VK_W] & game.flightMode == true & ship.getFuelLevel() > 0)
+			else if (UserInteraction.keys[KeyEvent.VK_W] & game.flightMode == true & ship.getFuelLevel() > 0)
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraftAcc.gif"));
 			else
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraft.gif"));
