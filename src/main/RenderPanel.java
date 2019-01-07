@@ -5,7 +5,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.BasicStroke;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
@@ -113,6 +115,8 @@ public class RenderPanel extends JPanel {
 		// Draw bullets
 		Game.controller.draw(g);
 		
+		Frame.drawSelection(g, this);
+		
 		// draw the fuel level
 		g.setColor(Color.GREEN);
 		g.fillRect(20, (int) (0.96 * Game.dim.height), (int) (400 * Game.ship.getFuelLevel()), (int) (0.02 * Game.dim.height));
@@ -151,6 +155,13 @@ public class RenderPanel extends JPanel {
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			g.drawString(gameover, Game.dim.width / 2 - 18 * gameover.length(), Game.dim.height / 2 + 30);
 		}
-
+	}
+	
+	public static BufferedImage rescaleImage(BufferedImage img, float scale) {
+		BufferedImage after = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		AffineTransform at = new AffineTransform();
+		at.scale(scale, scale);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		return scaleOp.filter(img, after);
 	}
 }

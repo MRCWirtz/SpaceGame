@@ -55,6 +55,8 @@ public class Ship {
 		fuelConsTurbo = (float) 3e-4;
 		fuelConsDef = (float) 1e-4;
 		isTurbo = false;
+		Frame.xCenter = x;
+		Frame.yCenter = y; 
 		
 	}
 	public float getX() {return x;}
@@ -147,8 +149,8 @@ public class Ship {
 		}
 
 		AffineTransform tx = AffineTransform.getRotateInstance(Game.ship.getShipAngle(), RenderPanel.shipSprite.getWidth() / 2, RenderPanel.shipSprite.getHeight() / 2);
-		AffineTransform txRadar = AffineTransform.getRotateInstance(Game.ship.getShipAngle(), RenderPanel.shipRadar.getWidth() / 2, RenderPanel.shipRadar.getHeight() / 2);
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+		AffineTransform txRadar = AffineTransform.getRotateInstance(Game.ship.getShipAngle(), RenderPanel.shipRadar.getWidth() / 2, RenderPanel.shipRadar.getHeight() / 2);
 		AffineTransformOp opRadar = new AffineTransformOp(txRadar, AffineTransformOp.TYPE_BILINEAR);
 
 		float xcoord = (Game.ship.getX() - Frame.xCenter) * Frame.scale + Game.dim.width / 2 - RenderPanel.shipSprite.getWidth() / 2;

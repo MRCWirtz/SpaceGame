@@ -30,7 +30,7 @@ public class Bullet {
 	public void draw(Graphics g) {
 		g.setColor(Color.RED);
 		float [] pixel1 = Calculation.coord2pixel(x, y, Frame.scale);
-		float [] pixel2 = Calculation.coord2pixel(x + 3 * vx, y + 3 * vy, Frame.scale);
+		float [] pixel2 = Calculation.coord2pixel(x + 5 * vx, y + 5 * vy, Frame.scale);
 		g.drawLine((int) pixel1[0], (int) pixel1[1], (int) pixel2[0], (int) pixel2[1]);
 	}
 }
