@@ -33,9 +33,9 @@ public class PlanetSystems {
 		return;
 	}
 	
-	public void move() {
+	public void update() {
 		for (int cnt = 0; cnt < objects.size(); cnt++)
-			objects.get(cnt).move();
+			objects.get(cnt).update();
 	}
 
 	public Object getObject(int idx) { return objects.get(idx); }

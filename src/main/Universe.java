@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -20,8 +19,8 @@ public class Universe {
 	static float rPlanetMax = 50;
 	static float rPlanetScale = 500;
 
-	static float rsunMin = 100;
-	static float rsunMax = 200;
+	static float rsunMin = 150;
+	static float rsunMax = 250;
 
 	static float trackCut = (float) 0.05;	// only track high ratios of m/R^2
 
@@ -46,7 +45,8 @@ public class Universe {
 				planetSystems.addStar((float) (j + 1) * worldSize / 3, (float) (j + 1) * worldSize / 3, rSun);
 				for (int i = 0; i < nPlanets; i++) {
 					float r = (rPlanetMax - rPlanetMin) * random.nextFloat() + rPlanetMin;
-					planetSystems.addPlanet(j, 300 + (float) Math.pow(i, 2) * 100, r, 1000, 5);
+					float exponent = (float) 1.8 + (float) 0.4 * random.nextFloat();
+					planetSystems.addPlanet(j, 400 + (float) Math.pow(i, exponent) * 100, r, 1000, 5);
 				}
 			}
 	}

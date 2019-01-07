@@ -33,10 +33,16 @@ public class Game implements ActionListener, KeyListener, MouseListener, MouseWh
 	public static int turn = 0;
 	public static float radarSize = 300;
 
-	static Ship ship = new Ship();
+	public static Ship ship;
+	public static Controller controller;
+
 	public static Game game;
 
 	public Game() {
+		
+		ship = new Ship();
+		controller = new Controller(this);
+		
 		jframe = new JFrame("Planet System");
 		jframe.setSize(dim.width, dim.height);
 		jframe.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -58,9 +64,10 @@ public class Game implements ActionListener, KeyListener, MouseListener, MouseWh
 
 		tick++;
 		Frame.Camera();
-		Universe.planetSystems.move();
-		ship.move();
+		Universe.planetSystems.update();
+		ship.update();
 		renderPanel.repaint();
+		controller.update();
 
 		if (over == true)
 			timer.stop();

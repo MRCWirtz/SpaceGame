@@ -1,8 +1,17 @@
 package main;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.ImageObserver;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
 
 public class Ship {
 	
@@ -11,8 +20,6 @@ public class Ship {
 	// parameters
 	private float shipAngle;
 	private float rotSpeed;
-
-
 	
 	static Random random =  new Random();
 	
@@ -31,6 +38,8 @@ public class Ship {
 	public float accDef;
 	public float accTurbo;
 	public float G = (float) ((float) 3 * Math.pow(10, -4));
+
+	public boolean shoot = false;
 	
 	public Ship() {
 		size = 40;	// pixel edge size
@@ -59,7 +68,7 @@ public class Ship {
 	public float getFuelLevel() { return fuelLevel;}
 	public float getSize() {return size;}
 	
-	public void move() {
+	public void update() {
 		
 		if (Frame.followMode == true) {
 			if (UserInteraction.keys[KeyEvent.VK_SHIFT])
@@ -81,6 +90,11 @@ public class Ship {
 				}
 				vx += acc * Math.sin(shipAngle);
 				vy -= acc * Math.cos(shipAngle);
+			}
+			if (shoot) {
+				Game.controller.addBullet(new Bullet(x, y, shipAngle, +1, Game.game));
+				Game.controller.addBullet(new Bullet(x, y, shipAngle, -1, Game.game));
+				shoot = false;
 			}
 		}
 		
@@ -110,6 +124,48 @@ public class Ship {
 			return true;
 		else
 			return false;
+	}
+	
+	public void draw(Graphics g, ImageObserver io) {
+		
+		// draw the radar
+		g.setColor(new Color(255, 255, 255, 30));
+		float xRadar = Game.dim.width - Game.radarSize - 20;
+		float yRadar = 20;
+		g.fillRect((int) xRadar, (int) yRadar, (int) Game.radarSize, (int) Game.radarSize);
+
+		try {
+			RenderPanel.shipRadar = ImageIO.read(new File(RenderPanel.imagePath + "spacecraftRadar.gif"));
+			if (UserInteraction.keys[KeyEvent.VK_W] & Frame.followMode == true & Game.ship.isTurbo == true & Game.ship.getFuelLevel() > 0)
+				RenderPanel.shipSprite = ImageIO.read(new File(RenderPanel.imagePath + "spacecraftTurbo.gif"));
+			else if (UserInteraction.keys[KeyEvent.VK_W] & Frame.followMode == true & Game.ship.getFuelLevel() > 0)
+				RenderPanel.shipSprite = ImageIO.read(new File(RenderPanel.imagePath + "spacecraftAcc.gif"));
+			else
+				RenderPanel.shipSprite = ImageIO.read(new File(RenderPanel.imagePath + "spacecraft.gif"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		AffineTransform tx = AffineTransform.getRotateInstance(Game.ship.getShipAngle(), RenderPanel.shipSprite.getWidth() / 2, RenderPanel.shipSprite.getHeight() / 2);
+		AffineTransform txRadar = AffineTransform.getRotateInstance(Game.ship.getShipAngle(), RenderPanel.shipRadar.getWidth() / 2, RenderPanel.shipRadar.getHeight() / 2);
+		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+		AffineTransformOp opRadar = new AffineTransformOp(txRadar, AffineTransformOp.TYPE_BILINEAR);
+
+		float xcoord = (Game.ship.getX() - Frame.xCenter) * Frame.scale + Game.dim.width / 2 - RenderPanel.shipSprite.getWidth() / 2;
+		float ycoord = (Game.ship.getY() - Frame.yCenter) * Frame.scale + Game.dim.height / 2 - RenderPanel.shipSprite.getHeight() / 2;
+		g.drawImage(op.filter(RenderPanel.shipSprite, null), (int) xcoord, (int) ycoord, io);
+		
+		g.drawImage(opRadar.filter(RenderPanel.shipRadar, null), (int) (xRadar + ((float) Game.ship.getX() / ((float) Universe.worldSize)) * Game.radarSize - RenderPanel.shipRadar.getWidth() / 2),
+				(int) (yRadar + ((float) Game.ship.getY() / ((float) Universe.worldSize)) * Game.radarSize - RenderPanel.shipRadar.getHeight() / 2), io);
+
+		g.setColor(new Color(255, 255, 51, 100));
+		for (int cnt = 0; cnt < Universe.planetSystems.systemIdx.size(); cnt++) {
+			Object currObject = Universe.planetSystems.getObject(Universe.planetSystems.systemIdx.get(cnt));
+			float xSystem = currObject.getX();
+			float ySystem = currObject.getY();
+			g.fillOval((int) (xRadar + ((float) xSystem / ((float) Universe.worldSize)) * Game.radarSize - 3),
+					(int) (yRadar + ((float) ySystem / ((float) Universe.worldSize)) * Game.radarSize - 3), 6, 6);
+		}
 	}
 	
 	public float distanceObject(int objectId) {

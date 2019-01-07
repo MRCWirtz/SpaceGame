@@ -6,14 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.BasicStroke;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 
@@ -21,9 +14,9 @@ public class RenderPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public BufferedImage shipSprite;
-	public BufferedImage shipRadar;
-	public String imagePath = System.getProperty("user.dir") + "/img/";
+	public static BufferedImage shipSprite;
+	public static BufferedImage shipRadar;
+	public static String imagePath = System.getProperty("user.dir") + "/img/";
 
 	protected void paintComponent(Graphics g) {
 
@@ -115,26 +108,10 @@ public class RenderPanel extends JPanel {
 		}
 
 		// draw the spacecraft
-		try {
-			shipRadar = ImageIO.read(new File(imagePath + "spacecraftRadar.gif"));
-			if (UserInteraction.keys[KeyEvent.VK_W] & Frame.followMode == true & Game.ship.isTurbo == true & Game.ship.getFuelLevel() > 0)
-				shipSprite = ImageIO.read(new File(imagePath + "spacecraftTurbo.gif"));
-			else if (UserInteraction.keys[KeyEvent.VK_W] & Frame.followMode == true & Game.ship.getFuelLevel() > 0)
-				shipSprite = ImageIO.read(new File(imagePath + "spacecraftAcc.gif"));
-			else
-				shipSprite = ImageIO.read(new File(imagePath + "spacecraft.gif"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		AffineTransform tx = AffineTransform.getRotateInstance(Game.ship.getShipAngle(), shipSprite.getWidth() / 2, shipSprite.getHeight() / 2);
-		AffineTransform txRadar = AffineTransform.getRotateInstance(Game.ship.getShipAngle(), shipRadar.getWidth() / 2, shipRadar.getHeight() / 2);
-		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-		AffineTransformOp opRadar = new AffineTransformOp(txRadar, AffineTransformOp.TYPE_BILINEAR);
-
-		float xcoord = (Game.ship.getX() - Frame.xCenter) * Frame.scale + Game.dim.width / 2 - shipSprite.getWidth() / 2;
-		float ycoord = (Game.ship.getY() - Frame.yCenter) * Frame.scale + Game.dim.height / 2 - shipSprite.getHeight() / 2;
-		g.drawImage(op.filter(shipSprite, null), (int) xcoord, (int) ycoord, this);
+		Game.ship.draw(g, this);
+		
+		// Draw bullets
+		Game.controller.draw(g);
 		
 		// draw the fuel level
 		g.setColor(Color.GREEN);
@@ -148,24 +125,7 @@ public class RenderPanel extends JPanel {
 		g.drawRect(20, (int) (0.96 * Game.dim.height), 400, (int) (0.02 * Game.dim.height));
 		g2.setStroke(oldStroke);
 
-		// draw the radar
-		g.setColor(new Color(255, 255, 255, 30));
-		float xRadar = Game.dim.width - Game.radarSize - 20;
-		float yRadar = 20;
-		g.fillRect((int) xRadar, (int) yRadar, (int) Game.radarSize, (int) Game.radarSize);
-
-		g.drawImage(opRadar.filter(shipRadar, null), (int) (xRadar + ((float) Game.ship.getX() / ((float) Universe.worldSize)) * Game.radarSize - shipRadar.getWidth() / 2),
-				(int) (yRadar + ((float) Game.ship.getY() / ((float) Universe.worldSize)) * Game.radarSize - shipRadar.getHeight() / 2), this);
-
-		g.setColor(new Color(255, 255, 51, 100));
-		for (int cnt = 0; cnt < Universe.planetSystems.systemIdx.size(); cnt++) {
-			Object currObject = Universe.planetSystems.getObject(Universe.planetSystems.systemIdx.get(cnt));
-			float xSystem = currObject.getX();
-			float ySystem = currObject.getY();
-			g.fillOval((int) (xRadar + ((float) xSystem / ((float) Universe.worldSize)) * Game.radarSize - 3),
-					(int) (yRadar + ((float) ySystem / ((float) Universe.worldSize)) * Game.radarSize - 3), 6, 6);
-		}
-
+		// draw info text
 		if (Frame.followMode == true) {
 			String info = "Press [Esc] to switch view.";
 			g.setColor(Color.GRAY);

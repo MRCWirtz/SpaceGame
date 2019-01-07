@@ -35,6 +35,10 @@ public class UserInteraction {
 			Frame.scale /= 1.25;
 			Frame.autoScaleDead = 500;
 		}
+		Frame.scale = Math.min(Math.max(Frame.scale, (float) 0.1), 10); 
+		if (ke.getExtendedKeyCode() == KeyEvent.VK_SPACE)
+			Game.ship.shoot = true;
+
 		keys[ke.getKeyCode()] = true;
 	}
 	
@@ -54,5 +58,6 @@ public class UserInteraction {
         	Frame.scale *= 1.1;
         else
         	Frame.scale /= 1.1;
+        Frame.scale = Math.min(Math.max(Frame.scale, (float) 0.1), 10); 
 	}
 }

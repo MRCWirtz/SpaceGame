@@ -40,7 +40,7 @@ public class Object {
 		this.R = R;
 	}
 	
-	public void move() {
+	public void update() {
 
 		if (this.isPlanet == true) {
 			this.phi += omega;
