@@ -40,8 +40,8 @@ public class RenderPanel extends JPanel {
 		g.setColor(Color.GRAY);
 		for (int cnt = 0; cnt < Universe.planetSystems.n; cnt++) {
 			Object currObject = Universe.planetSystems.getObject(cnt);
-			float r = currObject.getR() * Game.scale;
-			float[] pixel = Calculation.coord2pixel(currObject.getX(), currObject.getY(), Game.scale);
+			float r = currObject.getR() * Frame.scale;
+			float[] pixel = Calculation.coord2pixel(currObject.getX(), currObject.getY(), Frame.scale);
 			if (currObject.isPlanet == true)
 				g.setColor(Color.GRAY);
 			else
@@ -58,6 +58,8 @@ public class RenderPanel extends JPanel {
 		float vy = Game.ship.getVy();
 
 		float length = 0;
+		int expectCollision = -1;
+		int expectCollisionTime = -1;
 		for (int timeStep = 0; timeStep < Game.predictor; timeStep++) {
 
 			for (int j = 0; j < Universe.planetSystems.n; j++) {
@@ -70,11 +72,14 @@ public class RenderPanel extends JPanel {
 				vx += Physics.G * currObject.getMass() * diffxj / Math.pow(disj, 3);
 				vy += Physics.G * currObject.getMass() * diffyj / Math.pow(disj, 3);
 
-				if (disj < currObject.getR()) {
+				if (disj < currObject.getR() & expectCollision == -1) {
 					String gameover = "Expecting collision!";
 					g.setColor(Color.RED);
 					g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
 					g.drawString(gameover, Game.dim.width / 2 - 100, Game.dim.height - 100);
+					expectCollision = j;
+					expectCollisionTime = timeStep;
+					timeStep = Game.predictor + 1;
 				}
 			}
 			x += vx;
@@ -83,10 +88,10 @@ public class RenderPanel extends JPanel {
 			if (length > 10) {
 				int trans = (int) ((int) - 400 * timeStep * (timeStep - Game.predictor) / Math.pow(Game.predictor, 2));
 				g.setColor(new Color(255, 255, 51, trans));
-				float xRel = (x - Game.xCenter) * Game.scale;
-				float yRel = (y - Game.yCenter) * Game.scale;
-				float xRelold = (x - Game.xCenter) * Game.scale;
-				float yRelold = (y - Game.yCenter) * Game.scale;
+				float xRel = (x - Frame.xCenter) * Frame.scale;
+				float yRel = (y - Frame.yCenter) * Frame.scale;
+				float xRelold = (x - Frame.xCenter) * Frame.scale;
+				float yRelold = (y - Frame.yCenter) * Frame.scale;
 				g.drawLine((int) (xRelold + Game.dim.width / 2), (int) (yRelold + Game.dim.height / 2), (int) (xRel + Game.dim.width / 2), (int) (yRel + Game.dim.height / 2));
 			}
 
@@ -94,13 +99,27 @@ public class RenderPanel extends JPanel {
 			xold = x;
 			yold = y;
 		}
+		if (expectCollision >= 0) {
+			Object currObject = Universe.planetSystems.getObject(expectCollision);
+			g.setColor(new Color(255, 0, 0, 150));
+			for (int timeStepObject = 0; timeStepObject < expectCollisionTime / 4; timeStepObject++) {
+				int realTime = 4 * timeStepObject;
+				float [] pixel1 = Calculation.coord2pixel(currObject.getXFuture(realTime), currObject.getYFuture(realTime), Frame.scale);
+				float [] pixel2 = Calculation.coord2pixel(currObject.getXFuture(realTime + 1), currObject.getYFuture(realTime + 1), Frame.scale);
+				g.drawLine((int) pixel1[0], (int) pixel1[1], (int) pixel2[0], (int) pixel2[1]);
+			}
+			float [] pixelCollision = Calculation.coord2pixel(currObject.getXFuture(expectCollisionTime), currObject.getYFuture(expectCollisionTime), Frame.scale);
+			g.fillOval((int) pixelCollision[0]-1, (int) pixelCollision[1]-1, 2, 2);
+			float r = currObject.getR() * Frame.scale; 
+			g.drawOval((int) (pixelCollision[0] - r), (int) (pixelCollision[1] - r), 2 * (int) r, 2 * (int) r);
+		}
 
 		// draw the spacecraft
 		try {
 			shipRadar = ImageIO.read(new File(imagePath + "spacecraftRadar.gif"));
-			if (UserInteraction.keys[KeyEvent.VK_W] & Game.followMode == true & Game.ship.isTurbo == true & Game.ship.getFuelLevel() > 0)
+			if (UserInteraction.keys[KeyEvent.VK_W] & Frame.followMode == true & Game.ship.isTurbo == true & Game.ship.getFuelLevel() > 0)
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraftTurbo.gif"));
-			else if (UserInteraction.keys[KeyEvent.VK_W] & Game.followMode == true & Game.ship.getFuelLevel() > 0)
+			else if (UserInteraction.keys[KeyEvent.VK_W] & Frame.followMode == true & Game.ship.getFuelLevel() > 0)
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraftAcc.gif"));
 			else
 				shipSprite = ImageIO.read(new File(imagePath + "spacecraft.gif"));
@@ -113,8 +132,8 @@ public class RenderPanel extends JPanel {
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 		AffineTransformOp opRadar = new AffineTransformOp(txRadar, AffineTransformOp.TYPE_BILINEAR);
 
-		float xcoord = (Game.ship.getX() - Game.xCenter) * Game.scale + Game.dim.width / 2 - shipSprite.getWidth() / 2;
-		float ycoord = (Game.ship.getY() - Game.yCenter) * Game.scale + Game.dim.height / 2 - shipSprite.getHeight() / 2;
+		float xcoord = (Game.ship.getX() - Frame.xCenter) * Frame.scale + Game.dim.width / 2 - shipSprite.getWidth() / 2;
+		float ycoord = (Game.ship.getY() - Frame.yCenter) * Frame.scale + Game.dim.height / 2 - shipSprite.getHeight() / 2;
 		g.drawImage(op.filter(shipSprite, null), (int) xcoord, (int) ycoord, this);
 		
 		// draw the fuel level
@@ -147,7 +166,7 @@ public class RenderPanel extends JPanel {
 					(int) (yRadar + ((float) ySystem / ((float) Universe.worldSize)) * Game.radarSize - 3), 6, 6);
 		}
 
-		if (Game.followMode == true) {
+		if (Frame.followMode == true) {
 			String info = "Press [Esc] to switch view.";
 			g.setColor(Color.GRAY);
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 16));

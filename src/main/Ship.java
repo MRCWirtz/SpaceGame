@@ -61,7 +61,7 @@ public class Ship {
 	
 	public void move() {
 		
-		if (Game.followMode == true) {
+		if (Frame.followMode == true) {
 			if (UserInteraction.keys[KeyEvent.VK_SHIFT])
 				isTurbo = true;	
 			else
@@ -99,56 +99,27 @@ public class Ship {
 		
 	}
 
-	public void scale() {
-
-		float rc = 200;
-		float rmax = 10;
-
-		for (int j = 0; j < Universe.planetSystems.n; j++) {
-
-			float xj = Universe.planetSystems.getObject(j).getX();
-			float yj = Universe.planetSystems.getObject(j).getY();
-
-			float diffxj = xj - getX();
-			float diffyj = yj - getY();
-			float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-
-			if (disj < rmax) {
-				Game.scale = 2;
-				break;
-			}
-			if (disj < rc) {
-				if (checkVel(j)) {
-					Game.scale = 2 - 1 * (disj - rmax) / 200;
-					rc = disj;
-				}
-			}
-		}
-		//System.out.println(game.scale);
-	}
-
 	public boolean checkVel(int j) {
 		
+		// check if the velocity is sufficiently small to be bound in orbit
 		Object currObject = Universe.planetSystems.getObject(j);
-		float xj = currObject.getX();
-		float yj = currObject.getY();
-		float vxj = currObject.getVx();
-		float vyj = currObject.getVy();
-		
-		float diffxj = xj - x;
-		float diffyj = yj - y;
-		float disj = (float) Math.sqrt(diffxj * diffxj + diffyj * diffyj);
-		
-		float diffvxj = vxj - vx;
-		float diffvyj = vyj - vy;
-		float disvj = (float) Math.sqrt(diffvxj * diffvxj + diffvyj * diffvyj);
-		
+		float disj = distanceObject(currObject);
+		float disvj = Calculation.getDistance(getVx(), getVy(), currObject.getVx(), currObject.getVy());
 		float m = currObject.getMass();
-		
-		if (disvj < 1.5 * Math.sqrt(2 * Physics.G * m / disj))
+		if (disvj < Math.sqrt(2 * Physics.G * m / disj))
 			return true;
 		else
 			return false;
-		
 	}
+	
+	public float distanceObject(int objectId) {
+		Object object = Universe.planetSystems.getObject(objectId);
+		return distanceObject(object);
+	}
+
+	public float distanceObject(Object object) {
+		float dis = Calculation.getDistance(getX(), getY(), object.getX(), object.getY());
+		return dis;
+	}
+	
 }

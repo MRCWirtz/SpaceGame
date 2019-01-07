@@ -9,28 +9,32 @@ public class UserInteraction {
 	public static boolean[] keys = new boolean[222];
 
 	public static void interactiveMode() {
-		if (Game.followMode == false) {
+		if (Frame.followMode == false) {
 			if (keys[KeyEvent.VK_W])
-				Game.yCenter -= 5 / Game.scale;
+				Frame.yCenter -= 5 / Frame.scale;
 			if (keys[KeyEvent.VK_S])
-				Game.yCenter += 5 / Game.scale;
+				Frame.yCenter += 5 / Frame.scale;
 			if (keys[KeyEvent.VK_A])
-				Game.xCenter -= 5 / Game.scale;
+				Frame.xCenter -= 5 / Frame.scale;
 			if (keys[KeyEvent.VK_D])
-				Game.xCenter += 5 / Game.scale;
+				Frame.xCenter += 5 / Frame.scale;
 		}
 	}
 	
 	public static void keyPressed(KeyEvent ke) {
 		if (ke.getExtendedKeyCode() == KeyEvent.VK_ESCAPE) {
-			Game.followMode = !Game.followMode;
-			if (Game.followMode == true)
-				Game.followObject = -1;		// default follow the ship
+			Frame.followMode = !Frame.followMode;
+			if (Frame.followMode == true)
+				Frame.followObject = -1;		// default follow the ship
 		}
-		if (ke.getExtendedKeyCode() == KeyEvent.VK_PLUS || ke.getExtendedKeyCode() == KeyEvent.VK_PAGE_UP)
-			Game.scale *= 1.25;
-		if (ke.getExtendedKeyCode() == KeyEvent.VK_MINUS || ke.getExtendedKeyCode() == KeyEvent.VK_PAGE_DOWN)
-			Game.scale /= 1.25;
+		if (ke.getExtendedKeyCode() == KeyEvent.VK_PLUS || ke.getExtendedKeyCode() == KeyEvent.VK_PAGE_UP) {
+			Frame.scale *= 1.25;
+			Frame.autoScaleDead = 500;
+		}
+		if (ke.getExtendedKeyCode() == KeyEvent.VK_MINUS || ke.getExtendedKeyCode() == KeyEvent.VK_PAGE_DOWN) {
+			Frame.scale /= 1.25;
+			Frame.autoScaleDead = 500;
+		}
 		keys[ke.getKeyCode()] = true;
 	}
 	
@@ -45,9 +49,10 @@ public class UserInteraction {
 	}
 	
 	public static void mouseWheelMoved(MouseWheelEvent mwe) {
+		Frame.autoScaleDead = 500;
         if (mwe.getWheelRotation() < 0)
-        	Game.scale *= 1.125;
+        	Frame.scale *= 1.1;
         else
-        	Game.scale /= 1.125;
+        	Frame.scale /= 1.1;
 	}
 }

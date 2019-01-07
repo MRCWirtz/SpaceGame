@@ -9,8 +9,8 @@ public class Calculation {
 	}
 
 	public static float[] coord2pixel(float x, float y, float scale) {
-		float xRel = (x - Game.xCenter) * Game.scale;
-		float yRel = (y - Game.yCenter) * Game.scale;
+		float xRel = (x - Frame.xCenter) * Frame.scale;
+		float yRel = (y - Frame.yCenter) * Frame.scale;
 		return new float[] {xRel + Game.dim.width / 2, yRel + Game.dim.height / 2};
 	}
 	

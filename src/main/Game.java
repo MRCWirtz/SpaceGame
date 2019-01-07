@@ -28,16 +28,10 @@ public class Game implements ActionListener, KeyListener, MouseListener, MouseWh
 
 	public static int tick = 0;
 	public static boolean over = false;
-	public static float scale = 1;
-
-	public static float xCenter, yCenter;
 	public static int predictor = 1000;
 
 	public static int turn = 0;
 	public static float radarSize = 300;
-
-	public static boolean followMode = true;
-	public static Integer followObject = -1;
 
 	static Ship ship = new Ship();
 	public static Game game;
@@ -63,22 +57,7 @@ public class Game implements ActionListener, KeyListener, MouseListener, MouseWh
 	public void actionPerformed(ActionEvent arg0) {
 
 		tick++;
-
-		if (followMode == true) {
-			if (followObject == -1) {
-				ship.scale();
-				xCenter = ship.getX();
-				yCenter = ship.getY();
-			}
-			else {
-				Object currObject = Universe.planetSystems.getObject(followObject);
-				xCenter = currObject.getX();
-				yCenter = currObject.getY();
-			}
-		}
-		else
-			UserInteraction.interactiveMode();
-
+		Frame.Camera();
 		Universe.planetSystems.move();
 		ship.move();
 		renderPanel.repaint();
